@@ -28,7 +28,7 @@ export const PickTopicScreen = ({
     if (finalTopic) {
       console.log("Selected topic:", finalTopic);
       // Here you would typically send the selected topic to your game state or backend
-      socket.emit("selecttopic", finalTopic);
+      socket.emit("settopic", {topic: finalTopic});
     }
   };
 
