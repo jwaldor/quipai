@@ -23,7 +23,7 @@ const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
 
-type GameStateType = {
+export type GameStateType = {
   mode: "start" | "topic" | "ask" | "results" | "end";
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
   topic_state: { topic: string } | undefined;
