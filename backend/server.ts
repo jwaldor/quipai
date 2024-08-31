@@ -2,7 +2,6 @@
 import client from "client";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import CacheService from "services/gameStateServices";
 import { Server } from "socket.io";
 
 const app: Express = express();
@@ -19,6 +18,31 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+const MAX_ROUNDS = 3;
+const START_TIME_LIMIT = 30;
+const ASK_TIME_LIMIT = 60;
+const RESULTS_TIME_LIMIT = 40;
+
+type GameStateType = {
+  mode: "start" | "topic" | "ask" | "results" | "end";
+  ask_state: { prompt: string; answers: Map<string, string> } | undefined;
+  topic_state: { topic: string } | undefined;
+  elapsed_rounds: number;
+  count_time: number | undefined;
+  users: Array<{ name: string; score: number; id: string }>;
+  last_winner: string | undefined;
+};
+
+const gamestate: GameStateType = {
+  mode: "start",
+  ask_state: undefined,
+  topic_state: undefined,
+  users: [],
+  count_time: undefined,
+  elapsed_rounds: 0,
+  last_winner: undefined,
+};
+
 const origins = [process.env.FRONTEND_ADDRESS as string];
 
 const server = createServer(app);
@@ -29,62 +53,103 @@ const io = new Server({
 });
 io.listen(4000);
 
-// function broadcastStates() {
-//   const newgames = CacheService.updateGames();
-//   newgames.forEach((gameState, roomName) => {
-//     // io.to(socketId).emit(/* ... */);
-//     io.to(roomName).emit("newstate", gameState);
-//     // console.log("io", roomName, gameState);
-//     // console.log(io.in(roomName).fetchSockets());
-//   });
-// }
+function broadcastStates() {
+  // io.to(socketId).emit(/* ... */);
+  io.emit("gamestate", gamestate);
+  // console.log("io", roomName, gameState);
+  // console.log(io.in(roomName).fetchSockets());
+  if (gamestate.count_time && gamestate.count_time > 0) {
+    gamestate.count_time--;
+  }
+  if (gamestate.mode === "ask" && gamestate.count_time === 0) {
+    gamestate.mode = "results";
+  }
+  if (gamestate.mode === "results" && gamestate.count_time === 0) {
+    gamestate.mode = "end";
+  }
+}
 
-// setInterval(() => broadcastStates(), 50);
+setInterval(() => broadcastStates(), 1000);
 
-let socketRoomMap = new Map();
+// let socketRoomMap = new Map();
+
+function generatePrompt(topic: string) {
+  return "ai_generated_prompt";
+}
+
+function judgeAnswers() {
+  //evaluate best answer using GPT
+  //append to winner's score
+  return;
+}
 
 io.on("connection", (socket) => {
-  io.emit("gamelist", CacheService.listRooms());
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
+  //all of the users have arrived and they decide to start the game
+  socket.on("adduser", (name) => {
+    gamestate.users.push({ name: name, score: 0, id: socket.id });
   });
-  socket.on("adduser", (user) => {
-    CacheService.addName(user, socket.id);
-    io.emit("newuser", CacheService.listUsers());
+  socket.on("begingame", () => {
+    gamestate.mode = "topic";
   });
-  socket.on("moveup", () => {
-    console.log("moveup: " + socket.id);
-    CacheService.updateStateMove("up", socket.id, socketRoomMap.get(socket.id));
+  //someone chooses a topic
+  socket.on("settopic", (msg) => {
+    gamestate.topic_state = { topic: msg };
+    gamestate.ask_state = { prompt: generatePrompt(msg), answers: new Map() };
+    gamestate.mode = "ask";
+    gamestate.count_time = ASK_TIME_LIMIT;
   });
-  socket.on("movedown", () => {
-    console.log("movedown: " + socket.id);
-    CacheService.updateStateMove(
-      "down",
-      socket.id,
-      socketRoomMap.get(socket.id)
-    );
+  //someone answers a question
+  socket.on("answerquestion", (msg) => {
+    if (gamestate.ask_state) {
+      gamestate.ask_state.answers.set(socket.id, msg);
+      if (gamestate.ask_state.answers.size === gamestate.users.length) {
+        gamestate.mode = "results";
+        judgeAnswers();
+        gamestate.count_time = RESULTS_TIME_LIMIT;
+      }
+    } else {
+      console.error(
+        "trying to answer question when we're not in question answering state"
+      );
+    }
   });
-  socket.on("movenone", () => {
-    console.log("movenone: " + socket.id);
-    CacheService.updateStateMove(
-      "none",
-      socket.id,
-      socketRoomMap.get(socket.id)
-    );
-  });
-  socket.on("startaroom", (roomName) => {
-    CacheService.blankGame(roomName);
-    console.log("room added");
-    io.emit("gamelist", CacheService.listRooms());
-  });
+  // socket.on("adduser", (user) => {
+  //   CacheService.addName(user, socket.id);
+  //   io.emit("newuser", CacheService.listUsers());
+  // });
+  // socket.on("moveup", () => {
+  //   console.log("moveup: " + socket.id);
+  //   CacheService.updateStateMove("up", socket.id, socketRoomMap.get(socket.id));
+  // });
+  // socket.on("movedown", () => {
+  //   console.log("movedown: " + socket.id);
+  //   CacheService.updateStateMove(
+  //     "down",
+  //     socket.id,
+  //     socketRoomMap.get(socket.id)
+  //   );
+  // });
+  // socket.on("movenone", () => {
+  //   console.log("movenone: " + socket.id);
+  //   CacheService.updateStateMove(
+  //     "none",
+  //     socket.id,
+  //     socketRoomMap.get(socket.id)
+  //   );
+  // });
+  // socket.on("startaroom", (roomName) => {
+  //   CacheService.blankGame(roomName);
+  //   console.log("room added");
+  //   io.emit("gamelist", CacheService.listRooms());
+  // });
 
-  // socket.on("leaveroom", )
+  // // socket.on("leaveroom", )
 
-  socket.on("joinroom", (roomName) => {
-    console.log("cache", CacheService.viewGame());
-    console.log("joining room", roomName);
-    socket.join(roomName);
-    socketRoomMap.set(socket.id, roomName);
-    CacheService.addPlayerGame(roomName, socket.id);
-  });
+  // socket.on("joinroom", (roomName) => {
+  //   console.log("cache", CacheService.viewGame());
+  //   console.log("joining room", roomName);
+  //   socket.join(roomName);
+  //   socketRoomMap.set(socket.id, roomName);
+  //   CacheService.addPlayerGame(roomName, socket.id);
+  // });
 });
