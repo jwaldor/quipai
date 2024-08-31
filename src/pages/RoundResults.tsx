@@ -13,8 +13,22 @@ const RoundResults = () => {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
-      <div className="flex justify-center w-full pt-8">
+      <div className="flex flex-col items-center justify-center w-full pt-8">
         <h1 className="text-4xl font-bold text-white mb-8">Results</h1>
+        {/* <div className="flex flex-row">
+          <span className="sr-only">Awaiting results...</span>
+          <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div class="h-2 w-2 bg-black rounded-full animate-bounce"></div>
+        </div> */}
+        <div>
+          {" "}
+          <span className="loading loading-spinner text-primary"></span>
+          <span className="loading loading-spinner text-secondary"></span>
+          <span className="loading loading-spinner text-accent"></span>
+          <span className="loading loading-spinner text-warning"></span>
+          <span className="loading loading-spinner text-error"></span>
+        </div>
       </div>
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Question Prompt:</h2>

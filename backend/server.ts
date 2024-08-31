@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-const MAX_ROUNDS = 3;
+const MAX_ROUNDS = 8;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
@@ -80,6 +80,14 @@ function judgeAnswers() {
   return;
 }
 
+//erases stuff from last round that could interfere
+function clearPalette() {
+  gamestate.last_winner = undefined;
+  if (gamestate.ask_state) {
+    gamestate.ask_state.answers = new Map();
+  }
+}
+
 io.on("connection", (socket) => {
   console.log("connecton started");
   //all of the users have arrived and they decide to start the game
@@ -93,6 +101,7 @@ io.on("connection", (socket) => {
   });
   //someone chooses a topic
   socket.on("settopic", (msg) => {
+    clearPalette();
     console.log('get settopic', msg)
     gamestate.topic_state = { topic: msg };
     gamestate.ask_state = { prompt: generatePrompt(msg), answers: new Map() };
