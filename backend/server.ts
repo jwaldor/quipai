@@ -2,7 +2,6 @@
 import client from "client";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import CacheService from "services/gameStateServices";
 import { Server } from "socket.io";
 
 const app: Express = express();
@@ -19,6 +18,28 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+const MAX_ROUNDS = 3;
+const START_TIME_LIMIT = 30;
+const ASK_TIME_LIMIT = 60;
+
+type GameStateType = {
+  mode: "start" | "topic" | "ask" | "results" | "end";
+  ask_state: { prompt: string; answers: Map<string, string> } | undefined;
+  topic_state: { topic: string } | undefined;
+  elapsed_rounds: number;
+  count_time: number | undefined;
+  users: Array<{ name: string; score: number }>;
+};
+
+const gamestate: GameStateType = {
+  mode: "start",
+  ask_state: undefined,
+  topic_state: undefined,
+  users: [],
+  count_time: undefined,
+  elapsed_rounds: 0,
+};
+
 const origins = [process.env.FRONTEND_ADDRESS as string];
 
 const server = createServer(app);
@@ -29,24 +50,37 @@ const io = new Server({
 });
 io.listen(4000);
 
-// function broadcastStates() {
-//   const newgames = CacheService.updateGames();
-//   newgames.forEach((gameState, roomName) => {
-//     // io.to(socketId).emit(/* ... */);
-//     io.to(roomName).emit("newstate", gameState);
-//     // console.log("io", roomName, gameState);
-//     // console.log(io.in(roomName).fetchSockets());
-//   });
-// }
+function broadcastStates() {
+  // io.to(socketId).emit(/* ... */);
+  io.emit("gamestate", gamestate);
+  // console.log("io", roomName, gameState);
+  // console.log(io.in(roomName).fetchSockets());
+}
 
-// setInterval(() => broadcastStates(), 50);
+setInterval(() => broadcastStates(), 1000);
 
-let socketRoomMap = new Map();
+// let socketRoomMap = new Map();
+
+function generatePrompt(topic: string) {
+  return "ai_generated_prompt";
+}
 
 io.on("connection", (socket) => {
-  io.emit("gamelist", CacheService.listRooms());
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
+  //all of the users have arrived and they decide to start the game
+  socket.on("adduser", (name) => {
+    gamestate.users.push({ name: name, score: 0 });
+  });
+  socket.on("begingame", () => {
+    gamestate.mode = "topic";
+  });
+  //someone chooses a topic
+  socket.on("settopic", (msg) => {
+    gamestate.topic_state = { topic: msg };
+    gamestate.ask_state = { prompt: generatePrompt(msg), answers: new Map() };
+  });
+
+  socket.on("answerquestion", (msg) => {
+    gamestate.topic_state = { topic: msg };
   });
   socket.on("adduser", (user) => {
     CacheService.addName(user, socket.id);
