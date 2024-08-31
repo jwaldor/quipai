@@ -61,7 +61,7 @@ const GameStart: React.FC = () => {
             >
               {user ? (
                 <FunnySprites
-                  sprite_id={user.sprite_id}
+                  sprite_id={index % 5}
                   name={user.name}
                   score={user.score}
                 />

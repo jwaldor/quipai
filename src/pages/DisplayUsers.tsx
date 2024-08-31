@@ -39,7 +39,7 @@ export const FunnySprites = ({
     const tempSprites: Sprite[] = [];
 
     // Define a list of predefined colors
-    const colors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF3333"];
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFA07A', '#7FDBFF', '#FFD700', '#9B59B6', '#2ECC71', '#FF69B4'];
 
     const drawSprite = (x: number, y: number, color: string) => {
       ctx.fillStyle = color;
@@ -115,9 +115,9 @@ export function DisplayUsers() {
         <div className="mt-10 ml-10 text-lg" style={{ color: "#fff" }}></div>
         <br></br>
         <div className="flex flex-row ml-36 mt-96 scale-[2]">
-          {users.map((user) => (
+          {users.map((user, idx) => (
             <FunnySprites
-              sprite_id={user.sprite_id}
+              sprite_id={idx % 5}
               name={user.name}
               score={user.score}
             />
