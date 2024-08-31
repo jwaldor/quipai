@@ -1,21 +1,15 @@
-import React, { useState } from "react";
-import { GameState, MAX_NUM_OF_USERS } from "../App";
+import React from "react";
 import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
-import { GameStateType } from "../helpers/StateProvider";
 import { AccessContext } from "../helpers/StateProvider";
 import { useContext } from "react";
 
-const RoundResults: React.FC = () => {
+const RoundResults = () => {
   const { gamestate } = useContext(AccessContext);
 
   const users = gamestate.users;
   users.sort((a, b) => b.score - a.score);
 
-  const paddedUsers = [
-    ...users,
-    ...Array(MAX_NUM_OF_USERS - users.length).fill(undefined),
-  ];
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
@@ -36,45 +30,40 @@ const RoundResults: React.FC = () => {
           <span className="loading loading-spinner text-error"></span>
         </div>
       </div>
-      <div className="relative w-[70vw] h-[70vh] max-w-[700px] max-h-[400px] mx-auto">
-        {paddedUsers.map((user, index) => {
-          const angle = (index / MAX_NUM_OF_USERS) * 2 * Math.PI;
-          const radius = Math.min(
-            200,
-            window.innerWidth * 0.4,
-            window.innerHeight * 0.4
-          );
-          const left = `calc(50% + ${radius * Math.cos(angle)}px)`;
-          const top = `calc(50% + ${radius * Math.sin(angle)}px)`;
-          const size = Math.min(
-            80,
-            window.innerWidth * 0.1,
-            window.innerHeight * 0.1
-          );
-          return (
-            <div
-              key={index}
-              style={{
-                position: "absolute",
-                left,
-                top,
-                transform: "translate(-50%, -50%)",
-                width: `${size}px`,
-                height: `${size}px`,
-              }}
-            >
-              {user ? (
-                <FunnySprites
-                  sprite_id={user.sprite_id}
-                  name={user.name}
-                  score={user.score}
-                />
-              ) : (
-                <EmptyUserSprite />
-              )}
-            </div>
-          );
-        })}
+      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Question Prompt:</h2>
+        <p className="text-lg mb-6 text-gray-600">{gamestate.ask_state?.prompt}</p>
+
+        <h3 className="text-xl font-semibold mb-2 text-gray-800">Winning Answer:</h3>
+        {gamestate.last_winner && (
+          <div className="bg-green-100 p-4 rounded-lg mb-6">
+            <p className="text-lg font-medium text-gray-800">
+              {users.find(user => user.id === gamestate.last_winner)?.name}
+            </p>
+            <p className="text-gray-600">
+              {gamestate.ask_state?.answers.get(gamestate.last_winner)}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Score: {users.find(user => user.id === gamestate.last_winner)?.score}
+            </p>
+          </div>
+        )}
+
+        <hr className="my-6 border-t border-gray-300" />
+
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">All Answers:</h3>
+        <div className="space-y-4">
+          {Array.from(gamestate.ask_state?.answers || []).map(([userId, answer]) => {
+            const user = users.find(u => u.id === userId);
+            return (
+              <div key={userId} className="bg-gray-100 p-4 rounded-lg">
+                <p className="text-lg font-medium text-gray-800">{user?.name}</p>
+                <p className="text-gray-600">{answer}</p>
+                <p className="text-sm text-gray-500 mt-2">Score: {user?.score}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">

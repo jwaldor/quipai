@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { GameState, MAX_NUM_OF_USERS } from "../App";
+import { MAX_NUM_OF_USERS } from "../App";
 import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
-import { GameStateType } from "../helpers/StateProvider";
 import { AccessContext } from "../helpers/StateProvider";
 import { useContext } from "react";
 
@@ -17,12 +16,15 @@ const GameStart: React.FC = () => {
   ];
 
   const [newUser, setNewUser] = useState("");
+  const [disabled, setDisabled] = useState(!!gamestate.users.find(u => u.id === socket.id))
   console.log("gamestate", gamestate);
+  console.log('socket.id', socket.id)
 
   const handleAddNewUser = (e) => {
     e.preventDefault();
     console.log("adding new usre");
     socket.emit("adduser", newUser);
+    setDisabled(true)
   };
 
   return (
@@ -59,7 +61,7 @@ const GameStart: React.FC = () => {
             >
               {user ? (
                 <FunnySprites
-                  sprite_id={user.sprite_id}
+                  sprite_id={index % 5}
                   name={user.name}
                   score={user.score}
                 />
@@ -71,7 +73,7 @@ const GameStart: React.FC = () => {
         })}
       </div>
 
-      <form
+      {!disabled ? <form
         onSubmit={handleAddNewUser}
         className="w-full max-w-md flex mx-auto justify-center"
       >
@@ -89,19 +91,21 @@ const GameStart: React.FC = () => {
         >
           Join game
         </button>
-      </form>
-      <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">
+      </form> : <div className="text-center mt-4">
+        <p className="text-white text-lg font-semibold">You have joined the game. Waiting for the host to start...</p>
+      </div>}
+      {disabled && <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">
         <button
           type="submit"
           onClick={() => {
             console.log("begin game");
             socket.emit("begingame");
           }}
-          className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          className="bg-green-500 text-white px-4 py-2 mb-3 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
           Start game
         </button>
-      </div>
+      </div>}
     </div>
   );
 };

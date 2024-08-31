@@ -20,16 +20,18 @@ export interface GameState {
 
 function App() {
   // states are joinGame,
-  const [step, setStep] = useState<"joinGame" | "gameplay">("joinGame");
 
   const { gamestate } = useContext(AccessContext);
+  console.log('got state', gamestate)
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
-      {/* {step === "joinGame" && gamestate.mode === "start" && <GameStart />}
-      {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />} */}
-      {/* <GamePlay gameState={gamestate} /> */}
-      {/* <RoundResults /> */}
+      {gamestate.mode === "start" && gamestate.mode === "start" && <GameStart />}
+      {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />}
+      {gamestate.mode === "ask" && <GamePlay gameState={gamestate} />}
+      {gamestate.mode === "results" && <RoundResults/>}
+
+       
     </div>
   );
 }

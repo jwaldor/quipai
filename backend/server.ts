@@ -64,9 +64,6 @@ function broadcastStates() {
   if (gamestate.mode === "ask" && gamestate.count_time === 0) {
     gamestate.mode = "results";
   }
-  if (gamestate.mode === "results" && gamestate.count_time === 0) {
-    gamestate.mode = "end";
-  }
 }
 
 setInterval(() => broadcastStates(), 1000);
@@ -105,6 +102,7 @@ io.on("connection", (socket) => {
   //someone chooses a topic
   socket.on("settopic", (msg) => {
     clearPalette();
+    console.log('get settopic', msg)
     gamestate.topic_state = { topic: msg };
     gamestate.ask_state = { prompt: generatePrompt(msg), answers: new Map() };
     gamestate.mode = "ask";
