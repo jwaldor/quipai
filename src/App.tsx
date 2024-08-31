@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GameStart from "./pages/GameStart";
+import { PickTopicScreen } from "./pages/PickTopicScreen";
 
 export const MAX_NUM_OF_USERS = 8
 
@@ -12,6 +13,7 @@ interface User {
 
 export interface GameState  {
   users: User[];
+  gameStarted: boolean;
 }
 
 function App() {
@@ -23,15 +25,16 @@ function App() {
       { name: "Player1", sprite_id: 1, score: 0 },
       { name: "Player2", sprite_id: 2, score: 0 },
       { name: "Player3", sprite_id: 3, score: 0 },
-    ]
+    ],
+    gameStarted: true
   });
-  
-
 
   return (
-    <>
-      {step === 'joinGame' && <GameStart gameState={gameState}/>}
-    </>
+    <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
+
+      {step === 'joinGame' && !gameState.gameStarted && <GameStart gameState={gameState}/>}
+      {gameState.gameStarted && <PickTopicScreen gameState={gameState}/> }
+    </div>
   );
 }
 
