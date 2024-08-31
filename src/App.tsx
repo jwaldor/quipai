@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import GameStart from "./pages/GameStart";
 import { PickTopicScreen } from "./pages/PickTopicScreen";
 import { AccessContext } from "./helpers/StateProvider";
+import RoundResults from "./pages/RoundResults";
 
 export const MAX_NUM_OF_USERS = 8;
 
@@ -24,10 +25,9 @@ function App() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
-      {step === "joinGame" && gamestate.mode === "start" && (
-        <GameStart gamestate={gamestate} />
-      )}
+      {step === "joinGame" && gamestate.mode === "start" && <GameStart />}
       {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />}
+      {/* <RoundResults /> */}
     </div>
   );
 }
