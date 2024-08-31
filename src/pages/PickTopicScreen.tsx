@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
-import { GameState } from '../App';
-import { socket } from '../routes/socket';
+import React, { useState } from "react";
+import { GameStateType } from "../helpers/StateProvider";
+import { socket } from "../routes/socket";
 
-export const PickTopicScreen = ({gameState} : {gameState: GameState}) => {
+export const PickTopicScreen = ({
+  gamestate,
+}: {
+  gamestate: GameStateType;
+}) => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [customTopic, setCustomTopic] = useState<string>('');
+  const [customTopic, setCustomTopic] = useState<string>("");
 
-  const predefinedTopics = [
-    'Science and Technology',
-    'History and Culture',
-    'Arts and Entertainment',
-    'Sports and Recreation',
-  ];
+  const predefinedTopics = ["Medical", "Dating", "Something random"];
 
   const handleTopicSelection = (topic: string) => {
     setSelectedTopic(topic);
-    setCustomTopic('');
+    setCustomTopic("");
   };
 
   const handleCustomTopicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,19 +26,18 @@ export const PickTopicScreen = ({gameState} : {gameState: GameState}) => {
     e.preventDefault();
     const finalTopic = selectedTopic || customTopic;
     if (finalTopic) {
-      console.log('Selected topic:', finalTopic);
+      console.log("Selected topic:", finalTopic);
       // Here you would typically send the selected topic to your game state or backend
-    socket.emit('selecttopic', finalTopic)
-      
+      socket.emit("selecttopic", finalTopic);
     }
   };
 
   return (
-
     <div className="flex items-center w-full h-full">
-
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-auto">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Pick a Topic</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Pick a Topic
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 mb-6">
             {predefinedTopics.map((topic, index) => (
@@ -49,8 +47,8 @@ export const PickTopicScreen = ({gameState} : {gameState: GameState}) => {
                 onClick={() => handleTopicSelection(topic)}
                 className={`w-full py-2 px-4 rounded ${
                   selectedTopic === topic
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 }`}
               >
                 {topic}
@@ -70,8 +68,8 @@ export const PickTopicScreen = ({gameState} : {gameState: GameState}) => {
             type="submit"
             className={`w-full py-2 px-4 rounded transition duration-200 ${
               !selectedTopic && !customTopic
-                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                : 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer'
+                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                : "bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer"
             }`}
             disabled={!selectedTopic && !customTopic}
           >
@@ -79,7 +77,6 @@ export const PickTopicScreen = ({gameState} : {gameState: GameState}) => {
           </button>
         </form>
       </div>
-      </div>
+    </div>
   );
 };
-

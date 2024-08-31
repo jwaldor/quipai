@@ -6,31 +6,23 @@ import { GameStateType } from "../helpers/StateProvider";
 import { AccessContext } from "../helpers/StateProvider";
 import { useContext } from "react";
 
-const GameStart: React.FC = () => {
+const RoundResults: React.FC = () => {
   const { gamestate } = useContext(AccessContext);
 
   const users = gamestate.users;
+  users.sort((a, b) => b.score - a.score);
 
   const paddedUsers = [
     ...users,
     ...Array(MAX_NUM_OF_USERS - users.length).fill(undefined),
   ];
 
-  const [newUser, setNewUser] = useState("");
-  console.log("gamestate", gamestate);
-
-  const handleAddNewUser = (e) => {
-    e.preventDefault();
-    console.log("adding new usre");
-    socket.emit("adduser", newUser);
-  };
-
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
       <div className="flex justify-center w-full pt-8">
-        <h1 className="text-4xl font-bold text-white mb-8">Game Lobby</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Results</h1>
       </div>
-      <div className="relative w-[70vw] h-[70vh] max-w-[700px] max-h-[700px] mx-auto">
+      <div className="relative w-[70vw] h-[70vh] max-w-[700px] max-h-[400px] mx-auto">
         {paddedUsers.map((user, index) => {
           const angle = (index / MAX_NUM_OF_USERS) * 2 * Math.PI;
           const radius = Math.min(
@@ -71,25 +63,6 @@ const GameStart: React.FC = () => {
         })}
       </div>
 
-      <form
-        onSubmit={handleAddNewUser}
-        className="w-full max-w-md flex mx-auto justify-center"
-      >
-        <input
-          type="text"
-          onChange={(e) => {
-            setNewUser(e.target.value);
-          }}
-          placeholder="Enter your name ... "
-          className="flex-grow px-4 py-2 rounded-l-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-r-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          Join game
-        </button>
-      </form>
       <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">
         <button
           type="submit"
@@ -99,7 +72,7 @@ const GameStart: React.FC = () => {
           }}
           className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
-          Start game
+          Next Game
         </button>
       </div>
     </div>
@@ -109,4 +82,4 @@ const EmptyUserSprite: React.FC = () => {
   return <FunnySprites name="Empty" empty sprite_id={0} score={undefined} />;
 };
 
-export default GameStart;
+export default RoundResults;
