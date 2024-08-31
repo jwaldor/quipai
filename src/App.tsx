@@ -25,9 +25,9 @@ function App() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
-      {step === "joinGame" && gamestate.mode === "start" && <GameStart />}
-      {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />}
-      {/* <RoundResults /> */}
+      {/* {step === "joinGame" && gamestate.mode === "start" && <GameStart />}
+      {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />} */}
+      <RoundResults />
     </div>
   );
 }
