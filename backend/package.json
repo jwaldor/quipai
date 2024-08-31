@@ -6,6 +6,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-jwt": "^8.4.1",
+    "openai": "^4.57.0",
     "prisma": "^5.12.1",
     "react-router-dom": "^6.26.1",
     "socket.io": "^4.7.5",
