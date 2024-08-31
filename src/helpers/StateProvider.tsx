@@ -49,7 +49,6 @@ export const StateProvider: FC<Props> = ({ children }) => {
     last_winner: undefined,
   });
 
-  const clientId = "2695e07f91b64a2bbc0e4551654a330a";
   // const redirectUri = import.meta.env.VITE_REDIRECT_URI;
 
   // function seekSong()
