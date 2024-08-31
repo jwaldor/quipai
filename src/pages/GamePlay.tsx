@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { socket } from '../routes/socket';
+import { AccessContext } from '../helpers/StateProvider';
 
-const GamePlay = ({gameState}) => {
-    const prompt = "Prompt placeholder"
-  const [answer, setAnswer] = useState<string>('');
+const GamePlay = () => {
+    const { gamestate } = useContext(AccessContext);
+    const [answer, setAnswer] = useState<string>('');
   const [answerSubmitted, setAnswerSubmitted] = useState<boolean>(false)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,7 +19,7 @@ const GamePlay = ({gameState}) => {
   return (
     <>
         {!answerSubmitted &&     (<div className="flex flex-col items-center justify-center min-h-screen p-4">
-                <h2 className="text-2xl font-bold text-center mb-6">{prompt}</h2>
+                <h2 className="text-2xl font-bold text-center mb-6">{gamestate.ask_state?.prompt}</h2>
                 <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-5">
                 <textarea
                     value={answer}
