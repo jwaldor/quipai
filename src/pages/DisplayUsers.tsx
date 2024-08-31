@@ -8,14 +8,22 @@ interface Sprite {
   id: number;
 }
 
-const FunnySprites = ({
+export interface User {
+  name: string;
+  sprite_id: number;
+  score: number;
+}
+
+export const FunnySprites = ({
   sprite_id,
   name,
   score,
+  empty
 }: {
   sprite_id: number;
   name: string;
-  score: number;
+  score?: number;
+  empty?: boolean
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [sprites, setSprites] = useState<Sprite[]>([]);
@@ -56,7 +64,7 @@ const FunnySprites = ({
 
       // Use a predefined color from the colors array based on the sprite's ID
       const color = colors[i % colors.length];
-      drawSprite(x, y, color);
+      drawSprite(x, y, empty ? '#808080' : color);
 
       // Create an Image element for each sprite
       const img = new Image();
@@ -92,14 +100,15 @@ const FunnySprites = ({
             />
           ))}
         <div className="text-xs">{name}</div>
-        <div className="text-xs">{score}</div>
+        {score && <div className="text-xs">{score}</div>}
       </div>
     </div>
   );
 };
 
-function DisplayUsers() {
-  const [count, setCount] = useState(0);
+export function DisplayUsers() {
+  const [users, setUsers] = useState<User[]>([])
+
 
   return (
     <>
@@ -107,9 +116,12 @@ function DisplayUsers() {
         <div className="mt-10 ml-10 text-lg" style={{ color: "#fff" }}></div>
         <br></br>
         <div className="flex flex-row ml-36 mt-96 scale-[2]">
-          <FunnySprites sprite_id={1} name={"Jacob"} score={3} />{" "}
-          <FunnySprites sprite_id={2} name="Aidan" score={5} />
+            {users.map((user) => (
+            <FunnySprites sprite_id={user.sprite_id} name={user.name} score={user.score} />
+          ))}
         </div>
+
+
 
         <div></div>
       </div>
@@ -117,4 +129,4 @@ function DisplayUsers() {
   );
 }
 
-export default DisplayUsers;
+
