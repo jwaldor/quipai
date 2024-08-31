@@ -84,11 +84,14 @@ function judgeAnswers() {
 }
 
 io.on("connection", (socket) => {
+  console.log("connecton started");
   //all of the users have arrived and they decide to start the game
   socket.on("adduser", (name) => {
+    console.log("adding user");
     gamestate.users.push({ name: name, score: 0, id: socket.id });
   });
   socket.on("begingame", () => {
+    console.log("beginning game");
     gamestate.mode = "topic";
   });
   //someone chooses a topic

@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import { GameState, MAX_NUM_OF_USERS } from "../App";
 import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
+import { GameStateType } from "../helpers/StateProvider";
+import { AccessContext } from "../helpers/StateProvider";
+import { useContext } from "react";
 
-const GameStart: React.FC<{ gameState: GameState }> = ({ gameState }) => {
-  const { users } = gameState;
+const GameStart: React.FC = () => {
+  const { gamestate } = useContext(AccessContext);
+
+  const users = gamestate.users;
 
   const paddedUsers = [
     ...users,
@@ -12,8 +17,10 @@ const GameStart: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   ];
 
   const [newUser, setNewUser] = useState("");
+  console.log("gamestate", gamestate);
 
-  const handleAddNewUser = () => {
+  const handleAddNewUser = (e) => {
+    e.preventDefault();
     console.log("adding new usre");
     socket.emit("adduser", newUser);
   };
@@ -87,6 +94,7 @@ const GameStart: React.FC<{ gameState: GameState }> = ({ gameState }) => {
         <button
           type="submit"
           onClick={() => {
+            console.log("begin game");
             socket.emit("begingame");
           }}
           className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
