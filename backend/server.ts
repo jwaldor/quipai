@@ -72,8 +72,10 @@ setInterval(() => broadcastStates(), 1000);
 // let socketRoomMap = new Map();
 
 function generatePrompt(topic: string) {
+  console.log("topic", gamestate.topic_state?.topic);
   if (gamestate.topic_state) {
-    prompt_quip(gamestate.topic_state.topic).then((res) => {
+    return prompt_quip(gamestate.topic_state.topic).then((res) => {
+      console.log("res", res);
       return res;
     });
   }
@@ -115,16 +117,20 @@ io.on("connection", (socket) => {
     gamestate.mode = "topic";
   });
   //someone chooses a topic
-  socket.on("settopic", (msg) => {
+  socket.on("settopic", async (msg) => {
     clearPalette();
-    console.log('get settopic', msg)
+    console.log("get settopic", msg);
     gamestate.topic_state = { topic: msg };
-    gamestate.ask_state = { prompt: generatePrompt(msg), answers: new Map() };
+    gamestate.ask_state = {
+      prompt: (await generatePrompt(msg)) || "Failed to generate or something",
+      answers: new Map(),
+    };
     gamestate.mode = "ask";
     gamestate.count_time = ASK_TIME_LIMIT;
   });
   //someone answers a question
   socket.on("answerquestion", (msg) => {
+    console.log("msg", msg);
     if (gamestate.ask_state) {
       gamestate.ask_state.answers.set(socket.id, msg);
       if (gamestate.ask_state.answers.size === gamestate.users.length) {

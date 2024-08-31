@@ -14,10 +14,17 @@ export async function prompt_quip(topic: string) {
     ],
     model: "gpt-4o-mini",
   });
-  return chatCompletion.choices[0].message;
+  console.log("gpt prompt return", chatCompletion.choices[0].message.content);
+  return chatCompletion.choices[0].message.content;
 }
 
 export async function get_winner(answers: Map<string, string>, prompt: string) {
+  console.log(
+    "initial_prompt",
+    `When users were given the prompt "${prompt}", they gave the answers below. Output the key associated with the best answer in triple backticks (\`\`\`) so that it can be parsed by regex. \n ${JSON.stringify(
+      answers
+    )}`
+  );
   const chatCompletion = await client.chat.completions.create({
     messages: [
       {
@@ -29,6 +36,7 @@ export async function get_winner(answers: Map<string, string>, prompt: string) {
   });
   // Extract the content between triple backticks using regex
   const pre_output = chatCompletion.choices[0].message.content;
+  console.log("pre_output", pre_output);
   const output = pre_output === null ? "" : pre_output;
   console.log("output", output);
   const match = output.match(/```([\s\S]*?)```/);
