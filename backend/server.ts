@@ -3,6 +3,7 @@ import client from "client";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import { Server } from "socket.io";
+import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
 const { createServer } = require("node:http");
@@ -74,13 +75,27 @@ setInterval(() => broadcastStates(), 1000);
 // let socketRoomMap = new Map();
 
 function generatePrompt(topic: string) {
-  return "ai_generated_prompt";
+  if (gamestate.topic_state) {
+    prompt_quip(gamestate.topic_state.topic).then((res) => {
+      return res;
+    });
+  }
+  return "No prompt generated";
 }
 
 function judgeAnswers() {
-  //evaluate best answer using GPT
-  //append to winner's score
-  return;
+  if (gamestate.ask_state) {
+    get_winner(gamestate.ask_state?.answers, gamestate.ask_state?.prompt).then(
+      (res) => {
+        gamestate.last_winner = res;
+        gamestate.users.forEach((user) => {
+          if (user.id === gamestate.last_winner) {
+            user.score += 1;
+          }
+        });
+      }
+    );
+  }
 }
 
 //erases stuff from last round that could interfere
