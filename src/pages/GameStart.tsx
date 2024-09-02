@@ -16,15 +16,17 @@ const GameStart: React.FC = () => {
   ];
 
   const [newUser, setNewUser] = useState("");
-  const [disabled, setDisabled] = useState(!!gamestate.users.find(u => u.id === socket.id))
+  const [disabled, setDisabled] = useState(
+    !!gamestate.users.find((u) => u.id === socket.id)
+  );
   console.log("gamestate", gamestate);
-  console.log('socket.id', socket.id)
+  console.log("socket.id", socket.id);
 
-  const handleAddNewUser = (e) => {
+  const handleAddNewUser = (e: any) => {
     e.preventDefault();
     console.log("adding new usre");
     socket.emit("adduser", newUser);
-    setDisabled(true)
+    setDisabled(true);
   };
 
   return (
@@ -73,39 +75,47 @@ const GameStart: React.FC = () => {
         })}
       </div>
 
-      {!disabled ? <form
-        onSubmit={handleAddNewUser}
-        className="w-full max-w-md flex mx-auto justify-center"
-      >
-        <input
-          type="text"
-          onChange={(e) => {
-            setNewUser(e.target.value);
-          }}
-          placeholder="Enter your name ... "
-          className="flex-grow px-4 py-2 rounded-l-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-r-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+      {!disabled ? (
+        <form
+          onSubmit={handleAddNewUser}
+          className="w-full max-w-md flex mx-auto justify-center"
         >
-          Join game
-        </button>
-      </form> : <div className="text-center mt-4">
-        <p className="text-white text-lg font-semibold">You have joined the game. Waiting for the host to start...</p>
-      </div>}
-      {disabled && <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">
-        <button
-          type="submit"
-          onClick={() => {
-            console.log("begin game");
-            socket.emit("begingame");
-          }}
-          className="bg-green-500 text-white px-4 py-2 mb-3 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          Start game
-        </button>
-      </div>}
+          <input
+            type="text"
+            onChange={(e) => {
+              setNewUser(e.target.value);
+            }}
+            placeholder="Enter your name ... "
+            className="flex-grow px-4 py-2 rounded-l-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-r-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Join game
+          </button>
+        </form>
+      ) : (
+        <div className="text-center mt-4">
+          <p className="text-white text-lg font-semibold">
+            You have joined the game. Waiting for the host to start...
+          </p>
+        </div>
+      )}
+      {disabled && (
+        <div className="flex justify-center mt-2 sm:mt-16 md:scale-150">
+          <button
+            type="submit"
+            onClick={() => {
+              console.log("begin game");
+              socket.emit("begingame");
+            }}
+            className="bg-green-500 text-white px-4 py-2 mb-3 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Start game
+          </button>
+        </div>
+      )}
     </div>
   );
 };

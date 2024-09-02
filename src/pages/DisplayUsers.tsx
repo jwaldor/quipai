@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+
 import "../index.css";
 
 interface Sprite {
@@ -39,7 +38,16 @@ export const FunnySprites = ({
     const tempSprites: Sprite[] = [];
 
     // Define a list of predefined colors
-    const colors = ['#FF6B6B', '#4ECDC4', '#FFA07A', '#7FDBFF', '#FFD700', '#9B59B6', '#2ECC71', '#FF69B4'];
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#FFA07A",
+      "#7FDBFF",
+      "#FFD700",
+      "#9B59B6",
+      "#2ECC71",
+      "#FF69B4",
+    ];
 
     const drawSprite = (x: number, y: number, color: string) => {
       ctx.fillStyle = color;
