@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import { GameStateType } from "../helpers/StateProvider";
+
 import { socket } from "../routes/socket";
 
-export const PickTopicScreen = ({
-  gamestate,
-}: {
-  gamestate: GameStateType;
-}) => {
+export const PickTopicScreen = () => {
+  // const { gamestate } = useContext(AccessContext);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [customTopic, setCustomTopic] = useState<string>("");
 
@@ -28,7 +25,7 @@ export const PickTopicScreen = ({
     if (finalTopic) {
       console.log("Selected topic:", finalTopic);
       // Here you would typically send the selected topic to your game state or backend
-      socket.emit("settopic", {topic: finalTopic});
+      socket.emit("settopic", { topic: finalTopic });
     }
   };
 

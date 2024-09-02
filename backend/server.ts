@@ -84,6 +84,7 @@ function generatePrompt(topic: string) {
 
 function judgeAnswers() {
   if (gamestate.ask_state) {
+    console.log("answers",gamestate.ask_state.answers)
     get_winner(gamestate.ask_state?.answers, gamestate.ask_state?.prompt).then(
       (res) => {
         gamestate.last_winner = res;
@@ -132,9 +133,11 @@ io.on("connection", (socket) => {
   socket.on("answerquestion", (msg) => {
     console.log("msg", msg);
     if (gamestate.ask_state) {
+      console.log("setting answer");
       gamestate.ask_state.answers.set(socket.id, msg);
       if (gamestate.ask_state.answers.size === gamestate.users.length) {
         gamestate.mode = "results";
+        console.log("judging answers");
         judgeAnswers();
         gamestate.count_time = RESULTS_TIME_LIMIT;
       }

@@ -19,17 +19,16 @@ export async function prompt_quip(topic: string) {
 }
 
 export async function get_winner(answers: Map<string, string>, prompt: string) {
+  console.log("provided_answers",answers,JSON.stringify(Object.fromEntries(answers)))
   console.log(
     "initial_prompt",
-    `When users were given the prompt "${prompt}", they gave the answers below. Output the key associated with the best answer in triple backticks (\`\`\`) so that it can be parsed by regex. \n ${JSON.stringify(
-      answers
-    )}`
+    `When users were given the prompt "${prompt}", they gave the answers below. Output the key associated with the best answer in triple backticks (\`\`\`) so that it can be parsed by regex. \n ${JSON.stringify(Object.fromEntries(answers))}`
   );
   const chatCompletion = await client.chat.completions.create({
     messages: [
       {
         role: "user",
-        content: `When users were given the prompt "${prompt}", they gave the answers below. Output the key associated with the best answer in triple backticks (\`\`\`) so that it can be parsed by regex. \n ${answers}`,
+        content: `When users were given the prompt "${prompt}", they gave the answers below. Output the key associated with the best answer in triple backticks (\`\`\`) so that it can be parsed by regex. \n ${JSON.stringify(Object.fromEntries(answers))}`,
       },
     ],
     model: "gpt-4o-mini",

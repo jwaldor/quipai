@@ -1,13 +1,5 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  FC,
-  ReactNode,
-  SetStateAction,
-  Dispatch,
-} from "react";
-import { createContext, useContext } from "react";
+import { useState, useEffect, FC, ReactNode } from "react";
+import { createContext } from "react";
 import { socket } from "../routes/socket";
 
 export type GameStateType = {

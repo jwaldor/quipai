@@ -10,7 +10,7 @@ const RoundResults = () => {
   const users = gamestate.users;
   users.sort((a, b) => b.score - a.score);
 
-
+  console.log("gamestate.ask_state?.answers",gamestate.ask_state?.answers)
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
       <div className="flex flex-col items-center justify-center w-full pt-8">
@@ -41,7 +41,7 @@ const RoundResults = () => {
               {users.find(user => user.id === gamestate.last_winner)?.name}
             </p>
             <p className="text-gray-600">
-              {gamestate.ask_state?.answers.get(gamestate.last_winner)}
+              {(gamestate.ask_state?.answers && (gamestate.ask_state?.answers.size > 0)) && gamestate.ask_state?.answers.get(gamestate.last_winner)}
             </p>
             <p className="text-sm text-gray-500 mt-2">
               Score: {users.find(user => user.id === gamestate.last_winner)?.score}
