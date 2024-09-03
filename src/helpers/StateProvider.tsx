@@ -5,6 +5,7 @@ import { socket } from "../routes/socket";
 export type GameStateType = {
   mode: "start" | "topic" | "ask" | "results" | "end";
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
+  answers: Array<{ text: string; user_id:string;}>;
   topic_state: { topic: string } | undefined;
   elapsed_rounds: number;
   count_time: number | undefined;
@@ -18,6 +19,7 @@ export const AccessContext = createContext<{
   gamestate: {
     mode: "start",
     ask_state: undefined,
+    answers: [],
     topic_state: undefined,
     users: [],
     count_time: undefined,
@@ -34,6 +36,7 @@ export const StateProvider: FC<Props> = ({ children }) => {
   const [gamestate, setGameState] = useState<GameStateType>({
     mode: "start",
     ask_state: undefined,
+    answers: [],
     topic_state: undefined,
     users: [],
     count_time: undefined,
@@ -46,6 +49,7 @@ export const StateProvider: FC<Props> = ({ children }) => {
   // function seekSong()
   useEffect(() => {
     socket.on("gamestate", (state) => {
+      console.log("state",state)
       setGameState(state);
     });
 

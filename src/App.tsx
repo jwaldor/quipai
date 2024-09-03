@@ -27,8 +27,8 @@ function App() {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
       {gamestate.mode === "start" && gamestate.mode === "start" && <GameStart />}
-      {gamestate.mode === "topic" && <PickTopicScreen gamestate={gamestate} />}
-      {gamestate.mode === "ask" && <GamePlay gameState={gamestate} />}
+      {gamestate.mode === "topic" && <PickTopicScreen />}
+      {gamestate.mode === "ask" && <GamePlay />}
       {gamestate.mode === "results" && <RoundResults/>}
 
        
