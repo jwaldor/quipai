@@ -58,8 +58,8 @@ export const StateProvider: FC<Props> = ({ children }) => {
         console.log("state", state);
         setGameState(state);
       });
-      console.log("creating game");
-      socket.emit("creategame", "game1");
+      // console.log("creating game");
+      // socket.emit("creategame", "game1");
       // await new Promise(r => setTimeout(r, 3000));
       // console.log("addusergame")
       // socket.emit("addusergame", "game1","bob");
@@ -75,7 +75,7 @@ export const StateProvider: FC<Props> = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {socket.emit("test")},[userstate])
+  // useEffect(() => {socket.emit("test")},[userstate])
 
   return (
     <>
