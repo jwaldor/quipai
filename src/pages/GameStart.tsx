@@ -33,7 +33,7 @@ const GameStart: React.FC = () => {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
       <div className="flex justify-center w-full pt-8">
-        <h1 className="text-4xl font-bold text-white mb-8">Game Lobby</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Game Room</h1>
       </div>
       <div className="relative w-[70vw] h-[70vh] max-w-[700px] max-h-[700px] mx-auto">
         {paddedUsers.map((user, index) => {
