@@ -65,7 +65,10 @@ declare module "socket.io" {
 
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
-  io.emit("gamestate", gamestate);
+  gamestates.forEach((state) => state.gamestate.users.forEach((user) => {
+    io.to(user.id).emit("gamestate",state.gamestate)
+  }))
+  // io.emit("gamestate", gamestate);
   if (gamestate.mode === "results"){
     console.log("gamestate",gamestate)
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { MAX_NUM_OF_USERS } from "../App";
 import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
