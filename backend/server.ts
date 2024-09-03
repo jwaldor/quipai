@@ -1,8 +1,8 @@
 // src/index.js
 import client from "client";
+import { Server, Socket } from "socket.io"; // Update this import
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { Server } from "socket.io";
 import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
@@ -55,6 +55,13 @@ const io = new Server({
   },
 });
 io.listen(4000);
+
+// Extend the Socket type to include gamestate
+declare module "socket.io" {
+  interface Socket {
+    gamestate?: { name: string; gamestate: GameStateType };
+  }
+}
 
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
@@ -113,9 +120,71 @@ function clearPalette() {
   }
 }
 
+export const gamestates: Array<{name:string,gamestate:GameStateType}> = []
+
+// declare module 'socket.io' {
+//   interface Socket {
+//     user?: { id: string; name: string };
+//     roomId?: string;
+//     someOtherData?: { foo: string };
+//   }
+// }
+
+// function assignMiddle(socket: Socket, next) { // Use the correct Socket type
+//   console.log("middleware called");
+//   socket.gamestate = gamestates.find((g) => 
+//     g.gamestate.users.find((u) => u.id === socket.id)
+//   );
+//   console.log("gamestatemiddle", gamestates, gamestates.find((g) => 
+//     g.gamestate.users.find((u) => u.id === socket.id)
+//   ));
+//   console.log("socket.gamestate middle", socket.gamestate);
+//   next();
+// }
+
+
+// io.on("new_namespace", (namespace) => {
+//   namespace.use(assignMiddle);
+// });
+
 io.on("connection", (socket) => {
   console.log("connecton started");
-  //all of the users have arrived and they decide to start the game
+  // socket.use(assignMiddle)
+  socket.use((packet, next) => {
+    console.log("middleware called");
+    socket.gamestate = gamestates.find((g) =>
+      g.gamestate.users.find((u) => u.id === socket.id)
+    );
+    console.log("gamestatemiddle", gamestates, socket.gamestate);
+    next();
+  });
+  socket.on("creategame", (gamename) => {
+    console.log('creating game')
+    gamestates.push({name:gamename,gamestate:{
+      mode: "start",
+      ask_state: undefined,
+      answers: [],
+      topic_state: undefined,
+      users: [],
+      count_time: undefined,
+      elapsed_rounds: 0,
+      last_winner: undefined,
+    }})
+  })
+  socket.on("addusergame", (gamename,name) => {
+    console.log("adding user");
+    console.log("games",gamestates)
+    const thegame = gamestates.find((game) => game.name===gamename)
+    if (thegame){
+      thegame.gamestate.users.push({name:name,score:0,id:socket.id});
+      console.log("new gamestates",gamestates)
+    }
+    else{
+      console.error("error, game not found")
+    }
+  });
+  socket.on("test",()=>{console.log("socket",socket.gamestate,"socket.gamestate")})
+
   socket.on("adduser", (name) => {
     console.log("adding user");
     gamestate.users.push({ name: name, score: 0, id: socket.id });

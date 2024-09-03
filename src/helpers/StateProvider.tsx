@@ -45,16 +45,29 @@ export const StateProvider: FC<Props> = ({ children }) => {
   });
 
   // const redirectUri = import.meta.env.VITE_REDIRECT_URI;
-
+  function msleep(n) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
+  }
   // function seekSong()
   useEffect(() => {
-    socket.on("gamestate", (state) => {
-      console.log("state",state)
-      setGameState(state);
-    });
+    const fetchData = async () => {
+      socket.on("gamestate", (state) => {
+        console.log("state", state);
+        setGameState(state);
+      });
+      console.log("test");
+      socket.emit("creategame", "game1");
+      await new Promise(r => setTimeout(r, 3000));
+      console.log("addusergame")
+      socket.emit("addusergame", "game1","bob");
+      await new Promise(r => setTimeout(r, 1000));
+      console.log("test emit")
+      socket.emit("test");
+    };
+
+    fetchData();
 
     return () => {
-      // socket.removeListener("newuser");
       socket.removeListener("gamestate");
     };
   }, []);
