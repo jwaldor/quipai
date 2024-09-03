@@ -1,8 +1,9 @@
 // src/index.js
 import client from "client";
+import { Socket } from "socket.io-client";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { Server } from "socket.io";
+// import { Server } from "socket.io";
 import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
@@ -113,9 +114,28 @@ function clearPalette() {
   }
 }
 
+export const gamestates: Array<{name:string,gamestate:GameStateType}> = []
+
+// declare module 'socket.io' {
+//   interface Socket {
+//     user?: { id: string; name: string };
+//     roomId?: string;
+//     someOtherData?: { foo: string };
+//   }
+// }
+
+function assignMiddle(socket,next ) {
+  socket.gamestate = gamestates.find((g) => (g.gamestate.users.find((u) => {u.id===socket.id})))
+  next()
+}
+
 io.on("connection", (socket) => {
   console.log("connecton started");
   //all of the users have arrived and they decide to start the game
+  socket.on("addusergame", (gamename,name) => {
+    console.log("adding user");
+    gamestates.find((game) => game.name===gamename)?.gamestate.users.push({name:name,score:0,id:socket.id});
+  });
   socket.on("adduser", (name) => {
     console.log("adding user");
     gamestate.users.push({ name: name, score: 0, id: socket.id });

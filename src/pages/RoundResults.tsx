@@ -52,7 +52,7 @@ const RoundResults = () => {
 
         <hr className="my-6 border-t border-gray-300" />
 
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">All Answers:</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">Other Answers:</h3>
         <div className="space-y-4">
           {/* {Array.from(gamestate.ask_state?.answers || []).map(([userId, answer]) => {
             const user = users.find(u => u.id === userId);
