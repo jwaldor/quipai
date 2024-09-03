@@ -75,6 +75,8 @@ export const StateProvider: FC<Props> = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {socket.emit("test")},[userstate])
+
   return (
     <>
       <AccessContext.Provider

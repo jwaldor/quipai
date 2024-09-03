@@ -194,32 +194,32 @@ io.on("connection", (socket) => {
   });
   socket.on("begingame", () => {
     console.log("beginning game");
-    gamestate.mode = "topic";
+    socket.gamestate!.gamestate.mode = "topic";
   });
   //someone chooses a topic
   socket.on("settopic", async (msg) => {
     clearPalette();
     console.log("get settopic", msg);
-    gamestate.topic_state = { topic: msg };
-    gamestate.ask_state = {
+    socket.gamestate!.gamestate.topic_state = { topic: msg };
+    socket.gamestate!.gamestate.ask_state = {
       prompt: (await generatePrompt(msg)) || "Failed to generate or something",
       answers: new Map(),
     };
-    gamestate.mode = "ask";
-    gamestate.count_time = ASK_TIME_LIMIT;
+    socket.gamestate!.gamestate.mode = "ask";
+    socket.gamestate!.gamestate.count_time = ASK_TIME_LIMIT;
   });
   //someone answers a question
   socket.on("answerquestion", (msg) => {
     console.log("msg", msg);
-    if (gamestate.ask_state) {
+    if (socket.gamestate!.gamestate.ask_state) {
       console.log("setting answer");
-      gamestate.ask_state.answers.set(socket.id, msg);
+      socket.gamestate!.gamestate.ask_state.answers.set(socket.id, msg);
       gamestate.answers.push({text:msg,user_id:socket.id})
-      if (gamestate.ask_state.answers.size === gamestate.users.length) {
-        gamestate.mode = "results";
+      if (socket.gamestate!.gamestate.ask_state.answers.size === gamestate.users.length) {
+        socket.gamestate!.gamestate.mode = "results";
         console.log("judging answers");
         judgeAnswers();
-        gamestate.count_time = RESULTS_TIME_LIMIT;
+        socket.gamestate!.gamestate.count_time = RESULTS_TIME_LIMIT;
       }
     } else {
       console.error(
