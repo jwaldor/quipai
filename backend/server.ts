@@ -27,6 +27,7 @@ const RESULTS_TIME_LIMIT = 40;
 export type GameStateType = {
   mode: "start" | "topic" | "ask" | "results" | "end";
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
+  answers : Array<{text:string,user_id:string}>
   topic_state: { topic: string } | undefined;
   elapsed_rounds: number;
   count_time: number | undefined;
@@ -37,6 +38,7 @@ export type GameStateType = {
 const gamestate: GameStateType = {
   mode: "start",
   ask_state: undefined,
+  answers: [],
   topic_state: undefined,
   users: [],
   count_time: undefined,
@@ -57,6 +59,10 @@ io.listen(4000);
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
   io.emit("gamestate", gamestate);
+  if (gamestate.mode === "results"){
+    console.log("gamestate",gamestate)
+
+  }
   // console.log("io", roomName, gameState);
   // console.log(io.in(roomName).fetchSockets());
   if (gamestate.count_time && gamestate.count_time > 0) {
@@ -84,7 +90,7 @@ function generatePrompt(topic: string) {
 
 function judgeAnswers() {
   if (gamestate.ask_state) {
-    console.log("answers",gamestate.ask_state.answers)
+    // console.log("answers",gamestate.ask_state.answers)
     get_winner(gamestate.ask_state?.answers, gamestate.ask_state?.prompt).then(
       (res) => {
         gamestate.last_winner = res;
@@ -101,6 +107,7 @@ function judgeAnswers() {
 //erases stuff from last round that could interfere
 function clearPalette() {
   gamestate.last_winner = undefined;
+  gamestate.answers=[]
   if (gamestate.ask_state) {
     gamestate.ask_state.answers = new Map();
   }
@@ -135,6 +142,7 @@ io.on("connection", (socket) => {
     if (gamestate.ask_state) {
       console.log("setting answer");
       gamestate.ask_state.answers.set(socket.id, msg);
+      gamestate.answers.push({text:msg,user_id:socket.id})
       if (gamestate.ask_state.answers.size === gamestate.users.length) {
         gamestate.mode = "results";
         console.log("judging answers");
