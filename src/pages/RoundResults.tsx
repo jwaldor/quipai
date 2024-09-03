@@ -10,6 +10,8 @@ const RoundResults = () => {
   const users = gamestate.users;
   users.sort((a, b) => b.score - a.score);
 
+  console.log("answerss", gamestate.answers)
+
   console.log("gamestate.ask_state?.answers",gamestate.ask_state?.answers,gamestate)
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">

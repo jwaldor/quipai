@@ -65,7 +65,10 @@ declare module "socket.io" {
 
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
-  io.emit("gamestate", gamestate);
+  gamestates.forEach((state) => state.gamestate.users.forEach((user) => {
+    io.to(user.id).emit("gamestate",state.gamestate)
+  }))
+  // io.emit("gamestate", gamestate);
   if (gamestate.mode === "results"){
     console.log("gamestate",gamestate)
 
@@ -84,32 +87,7 @@ setInterval(() => broadcastStates(), 1000);
 
 // let socketRoomMap = new Map();
 
-function generatePrompt(topic: string) {
-  console.log("topic", gamestate.topic_state?.topic);
-  if (gamestate.topic_state) {
-    return prompt_quip(gamestate.topic_state.topic).then((res) => {
-      console.log("res", res);
-      return res;
-    });
-  }
-  return "No prompt generated";
-}
 
-function judgeAnswers() {
-  if (gamestate.ask_state) {
-    // console.log("answers",gamestate.ask_state.answers)
-    get_winner(gamestate.ask_state?.answers, gamestate.ask_state?.prompt).then(
-      (res) => {
-        gamestate.last_winner = res;
-        gamestate.users.forEach((user) => {
-          if (user.id === gamestate.last_winner) {
-            user.score += 1;
-          }
-        });
-      }
-    );
-  }
-}
 
 //erases stuff from last round that could interfere
 function clearPalette() {
@@ -148,6 +126,32 @@ export const gamestates: Array<{name:string,gamestate:GameStateType}> = []
 // });
 
 io.on("connection", (socket) => {
+  function generatePrompt(topic: string) {
+    console.log("topic", socket.gamestate!.gamestate.topic_state?.topic);
+    if (socket.gamestate!.gamestate.topic_state) {
+      return prompt_quip(socket.gamestate!.gamestate.topic_state.topic).then((res) => {
+        console.log("res", res);
+        return res;
+      });
+    }
+    return "No prompt generated";
+  }
+  
+  function judgeAnswers() {
+    if (socket.gamestate!.gamestate.ask_state) {
+      // console.log("answers",gamestate.ask_state.answers)
+      get_winner(socket.gamestate!.gamestate.ask_state?.answers, socket.gamestate!.gamestate.ask_state?.prompt).then(
+        (res) => {
+          socket.gamestate!.gamestate.last_winner = res;
+          socket.gamestate!.gamestate.users.forEach((user) => {
+            if (user.id === socket.gamestate!.gamestate.last_winner) {
+              user.score += 1;
+            }
+          });
+        }
+      );
+    }
+  }
   console.log("connecton started");
   // socket.use(assignMiddle)
   socket.use((packet, next) => {
@@ -185,38 +189,38 @@ io.on("connection", (socket) => {
   });
   socket.on("test",()=>{console.log("socket",socket.gamestate,"socket.gamestate")})
 
-  socket.on("adduser", (name) => {
-    console.log("adding user");
-    gamestate.users.push({ name: name, score: 0, id: socket.id });
-  });
+  // socket.on("adduser", (name) => {
+  //   console.log("adding user");
+  //   gamestate.users.push({ name: name, score: 0, id: socket.id });
+  // });
   socket.on("begingame", () => {
     console.log("beginning game");
-    gamestate.mode = "topic";
+    socket.gamestate!.gamestate.mode = "topic";
   });
   //someone chooses a topic
   socket.on("settopic", async (msg) => {
     clearPalette();
     console.log("get settopic", msg);
-    gamestate.topic_state = { topic: msg };
-    gamestate.ask_state = {
+    socket.gamestate!.gamestate.topic_state = { topic: msg };
+    socket.gamestate!.gamestate.ask_state = {
       prompt: (await generatePrompt(msg)) || "Failed to generate or something",
       answers: new Map(),
     };
-    gamestate.mode = "ask";
-    gamestate.count_time = ASK_TIME_LIMIT;
+    socket.gamestate!.gamestate.mode = "ask";
+    socket.gamestate!.gamestate.count_time = ASK_TIME_LIMIT;
   });
   //someone answers a question
   socket.on("answerquestion", (msg) => {
     console.log("msg", msg);
-    if (gamestate.ask_state) {
+    if (socket.gamestate!.gamestate.ask_state) {
       console.log("setting answer");
-      gamestate.ask_state.answers.set(socket.id, msg);
-      gamestate.answers.push({text:msg,user_id:socket.id})
-      if (gamestate.ask_state.answers.size === gamestate.users.length) {
-        gamestate.mode = "results";
+      socket.gamestate!.gamestate.ask_state.answers.set(socket.id, msg);
+      socket.gamestate!.gamestate.answers.push({text:msg,user_id:socket.id})
+      if (socket.gamestate!.gamestate.ask_state.answers.size === socket.gamestate!.gamestate.users.length) {
+        socket.gamestate!.gamestate.mode = "results";
         console.log("judging answers");
         judgeAnswers();
-        gamestate.count_time = RESULTS_TIME_LIMIT;
+        socket.gamestate!.gamestate.count_time = RESULTS_TIME_LIMIT;
       }
     } else {
       console.error(
