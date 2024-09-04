@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import GameStart from "./pages/GameStart";
 import { PickTopicScreen } from "./pages/PickTopicScreen";
 import { AccessContext } from "./helpers/StateProvider";

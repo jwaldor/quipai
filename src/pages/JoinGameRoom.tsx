@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { socket } from "../routes/socket";
-import { useContext } from "react";
-import { AccessContext } from "../helpers/StateProvider";
+
 
 
 const JoinGameRoom: React.FC = () => {

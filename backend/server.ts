@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-const MAX_ROUNDS = 6;
+const MAX_ROUNDS = 4;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;

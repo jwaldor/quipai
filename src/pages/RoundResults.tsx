@@ -1,5 +1,3 @@
-import React from "react";
-import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
 import { AccessContext } from "../helpers/StateProvider";
 import { useContext } from "react";
@@ -95,8 +93,6 @@ const RoundResults = () => {
     </div>
   );
 };
-const EmptyUserSprite: React.FC = () => {
-  return <FunnySprites name="Empty" empty sprite_id={0} score={undefined} />;
-};
+
 
 export default RoundResults;

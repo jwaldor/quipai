@@ -17,7 +17,7 @@ const WinModal = () => {
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Leaderboard</h2>
         <div className="space-y-4">
-          {users.map((user, index) => (
+          {users.map((user) => (
             <div
               key={user.id}
               className={`p-4 rounded-lg ${user.id === topUser.id ? "bg-green-100" : "bg-gray-100"}`}
