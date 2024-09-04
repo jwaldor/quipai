@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-const MAX_ROUNDS = 3;
+const MAX_ROUNDS = 6;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
@@ -42,7 +42,7 @@ const gamestate: GameStateType = {
   topic_state: undefined,
   users: [],
   count_time: undefined,
-  elapsed_rounds: 0,
+  elapsed_rounds: -1,
   last_winner: undefined,
 };
 
@@ -177,7 +177,7 @@ io.on("connection", (socket) => {
       topic_state: undefined,
       users: [],
       count_time: undefined,
-      elapsed_rounds: 0,
+      elapsed_rounds: -1,
       last_winner: undefined,
     }})
   })
@@ -203,9 +203,39 @@ io.on("connection", (socket) => {
   // });
   socket.on("begingame", () => {
     console.log("beginning game");
-    socket.gamestate!.gamestate.mode = "topic";
+    socket.gamestate!.gamestate.elapsed_rounds++
+    if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
+      socket.gamestate!.gamestate.mode = "end";
+    }
+    else {
+      socket.gamestate!.gamestate.mode = "topic";
+    }
     broadcastState(socket.gamestate!.gamestate)
-
+    
+  });
+  socket.on("beginnewgame", () => {
+    console.log("beginning new game");
+    socket.gamestate!.gamestate = {...socket.gamestate!.gamestate,
+      users: socket.gamestate!.gamestate.users.map((user) => ({id:user.id,name: user.name, score:0})),
+      mode: "topic",
+      ask_state: undefined,
+      answers: [],
+      topic_state: undefined,
+      count_time: undefined,
+      elapsed_rounds: -1,
+    }
+    socket.gamestate!.gamestate.elapsed_rounds++
+    socket.gamestate!.gamestate.mode = "topic";
+    // socket.gamestate!.gamestate.elapsed_rounds++
+    // if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
+    //   socket.gamestate!.gamestate.mode = "end";
+    //   socket.gamestate!.gamestate.elapsed_rounds = -1
+    // }
+    // else {
+    //   socket.gamestate!.gamestate.mode = "topic";
+    // }
+    broadcastState(socket.gamestate!.gamestate)
+    
   });
   //someone chooses a topic
   socket.on("settopic", async (msg) => {

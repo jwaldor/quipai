@@ -5,6 +5,7 @@ import { AccessContext } from "./helpers/StateProvider";
 import RoundResults from "./pages/RoundResults";
 import GamePlay from "./pages/GamePlay";
 import JoinGameRoom from "./pages/JoinGameRoom";
+import WinModal from "./pages/WinModal";
 
 export const MAX_NUM_OF_USERS = 8;
 
@@ -32,6 +33,7 @@ function App() {
       {gamestate.mode === "topic" && <PickTopicScreen />}
       {gamestate.mode === "ask" && <GamePlay />}
       {gamestate.mode === "results" && <RoundResults/>}
+      {gamestate.mode === "end" && <WinModal/>}
       </>}
       {userstate === "not_joined" && <JoinGameRoom />}
        
