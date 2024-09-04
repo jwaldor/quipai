@@ -114,26 +114,26 @@ export const FunnySprites = ({
   );
 };
 
-export function DisplayUsers() {
-  const [users, setUsers] = useState<User[]>([]);
+// export function DisplayUsers() {
+//   const [users, setUsers] = useState<User[]>([]);
 
-  return (
-    <>
-      <div className="bg-gradient-to-br from-blue-600 to-cyan-400 h-screen flex ">
-        <div className="mt-10 ml-10 text-lg" style={{ color: "#fff" }}></div>
-        <br></br>
-        <div className="flex flex-row ml-36 mt-96 scale-[2]">
-          {users.map((user, idx) => (
-            <FunnySprites
-              sprite_id={idx % 5}
-              name={user.name}
-              score={user.score}
-            />
-          ))}
-        </div>
+//   return (
+//     <>
+//       <div className="bg-gradient-to-br from-blue-600 to-cyan-400 h-screen flex ">
+//         <div className="mt-10 ml-10 text-lg" style={{ color: "#fff" }}></div>
+//         <br></br>
+//         <div className="flex flex-row ml-36 mt-96 scale-[2]">
+//           {users.map((user, idx) => (
+//             <FunnySprites
+//               sprite_id={idx % 5}
+//               name={user.name}
+//               score={user.score}
+//             />
+//           ))}
+//         </div>
 
-        <div></div>
-      </div>
-    </>
-  );
-}
+//         <div></div>
+//       </div>
+//     </>
+//   );
+// }
