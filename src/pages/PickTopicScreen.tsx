@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
+import { QUIPLASH_TOPICS } from "../topic_list";
 import { socket } from "../routes/socket";
 
 export const PickTopicScreen = () => {
@@ -7,7 +7,12 @@ export const PickTopicScreen = () => {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [customTopic, setCustomTopic] = useState<string>("");
 
-  const predefinedTopics = ["Medical", "Dating", "Something random"];
+  const [predefinedTopics, setPredefinedTopics] = useState<string[]>([]);
+
+  useEffect(() => {
+    const shuffledTopics = QUIPLASH_TOPICS.sort(() => 0.5 - Math.random());
+    setPredefinedTopics(shuffledTopics.slice(0, 3));
+  }, []);
 
   const handleTopicSelection = (topic: string) => {
     setSelectedTopic(topic);

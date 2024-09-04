@@ -9,6 +9,7 @@ const JoinGameRoom: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [newGameName, setNewGameName] = useState("");
   const [showCreateGame, setShowCreateGame] = useState(false);
+  const [gameCreated, setGameCreated] = useState(false);
 
   // const { gamestate } = useContext(AccessContext);
 
@@ -23,6 +24,9 @@ const JoinGameRoom: React.FC = () => {
     e.preventDefault();
     console.log("Creating game with", { newGameName });
     socket.emit("creategame", newGameName);
+    setNewGameName(""); // Clear the input field
+    setGameCreated(true); // Show success message
+    setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
     // Logic for creating the game would go here
   };
 
@@ -93,6 +97,8 @@ const JoinGameRoom: React.FC = () => {
                 </button>
               </div>
             </form>
+
+              <p className="text-green-500 text-center mt-4 h-3">{gameCreated && <span>Game created!</span>}</p>
           </>
         )}
       </div>
