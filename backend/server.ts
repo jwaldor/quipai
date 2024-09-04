@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-const MAX_ROUNDS = 8;
+const MAX_ROUNDS = 4;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
@@ -42,7 +42,7 @@ const gamestate: GameStateType = {
   topic_state: undefined,
   users: [],
   count_time: undefined,
-  elapsed_rounds: 0,
+  elapsed_rounds: -1,
   last_winner: undefined,
 };
 
@@ -83,6 +83,12 @@ function broadcastStates() {
   }
 }
 
+function broadcastState(state:GameStateType){
+  state.users.forEach((user) => {
+    io.to(user.id).emit("gamestate",state)
+  })
+}
+
 setInterval(() => broadcastStates(), 1000);
 
 // let socketRoomMap = new Map();
@@ -90,11 +96,11 @@ setInterval(() => broadcastStates(), 1000);
 
 
 //erases stuff from last round that could interfere
-function clearPalette() {
-  gamestate.last_winner = undefined;
-  gamestate.answers=[]
-  if (gamestate.ask_state) {
-    gamestate.ask_state.answers = new Map();
+function clearPalette(state:GameStateType) {
+  state.last_winner = undefined;
+  state.answers=[]
+  if (state.ask_state) {
+    state.ask_state.answers = new Map();
   }
 }
 
@@ -171,7 +177,7 @@ io.on("connection", (socket) => {
       topic_state: undefined,
       users: [],
       count_time: undefined,
-      elapsed_rounds: 0,
+      elapsed_rounds: -1,
       last_winner: undefined,
     }})
   })
@@ -182,10 +188,12 @@ io.on("connection", (socket) => {
     if (thegame){
       thegame.gamestate.users.push({name:name,score:0,id:socket.id});
       console.log("new gamestates",gamestates)
+      broadcastState(thegame.gamestate)
     }
     else{
       console.error("error, game not found")
     }
+
   });
   socket.on("test",()=>{console.log("socket",socket.gamestate,"socket.gamestate")})
 
@@ -195,11 +203,43 @@ io.on("connection", (socket) => {
   // });
   socket.on("begingame", () => {
     console.log("beginning game");
+    socket.gamestate!.gamestate.elapsed_rounds++
+    if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
+      socket.gamestate!.gamestate.mode = "end";
+    }
+    else {
+      socket.gamestate!.gamestate.mode = "topic";
+    }
+    broadcastState(socket.gamestate!.gamestate)
+    
+  });
+  socket.on("beginnewgame", () => {
+    console.log("beginning new game");
+    socket.gamestate!.gamestate = {...socket.gamestate!.gamestate,
+      users: socket.gamestate!.gamestate.users.map((user) => ({id:user.id,name: user.name, score:0})),
+      mode: "topic",
+      ask_state: undefined,
+      answers: [],
+      topic_state: undefined,
+      count_time: undefined,
+      elapsed_rounds: -1,
+    }
+    socket.gamestate!.gamestate.elapsed_rounds++
     socket.gamestate!.gamestate.mode = "topic";
+    // socket.gamestate!.gamestate.elapsed_rounds++
+    // if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
+    //   socket.gamestate!.gamestate.mode = "end";
+    //   socket.gamestate!.gamestate.elapsed_rounds = -1
+    // }
+    // else {
+    //   socket.gamestate!.gamestate.mode = "topic";
+    // }
+    broadcastState(socket.gamestate!.gamestate)
+    
   });
   //someone chooses a topic
   socket.on("settopic", async (msg) => {
-    clearPalette();
+    clearPalette(socket.gamestate!.gamestate);
     console.log("get settopic", msg);
     socket.gamestate!.gamestate.topic_state = { topic: msg };
     socket.gamestate!.gamestate.ask_state = {
@@ -208,6 +248,7 @@ io.on("connection", (socket) => {
     };
     socket.gamestate!.gamestate.mode = "ask";
     socket.gamestate!.gamestate.count_time = ASK_TIME_LIMIT;
+    broadcastState(socket.gamestate!.gamestate)
   });
   //someone answers a question
   socket.on("answerquestion", (msg) => {
@@ -227,6 +268,7 @@ io.on("connection", (socket) => {
         "trying to answer question when we're not in question answering state"
       );
     }
+    broadcastState(socket.gamestate!.gamestate)
   });
   // socket.on("adduser", (user) => {
   //   CacheService.addName(user, socket.id);

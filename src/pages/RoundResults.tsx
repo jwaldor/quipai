@@ -1,5 +1,3 @@
-import React from "react";
-import { FunnySprites } from "./DisplayUsers"; // Assuming FunnySprites is exported from DisplayUsers
 import { socket } from "../routes/socket";
 import { AccessContext } from "../helpers/StateProvider";
 import { useContext } from "react";
@@ -89,14 +87,12 @@ const RoundResults = () => {
           }}
           className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
-          Next Game
+          Next Round
         </button>
       </div>
     </div>
   );
 };
-const EmptyUserSprite: React.FC = () => {
-  return <FunnySprites name="Empty" empty sprite_id={0} score={undefined} />;
-};
+
 
 export default RoundResults;

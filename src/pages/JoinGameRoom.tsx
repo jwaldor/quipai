@@ -1,20 +1,32 @@
 import React, { useState } from "react";
 import { socket } from "../routes/socket";
-import { useContext } from "react";
-import { AccessContext } from "../helpers/StateProvider";
+
+
 
 const JoinGameRoom: React.FC = () => {
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
+  const [newGameName, setNewGameName] = useState("");
+  const [showCreateGame, setShowCreateGame] = useState(false);
+  const [gameCreated, setGameCreated] = useState(false);
 
   // const { gamestate } = useContext(AccessContext);
-
 
   const handleJoinGame = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Joining game with", { gameName, userName });
-    socket.emit("addusergame",gameName,userName)
+    socket.emit("addusergame", gameName, userName);
     // Logic for joining the game would go here
+  };
+
+  const handleCreateGame = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Creating game with", { newGameName });
+    socket.emit("creategame", newGameName);
+    setNewGameName(""); // Clear the input field
+    setGameCreated(true); // Show success message
+    setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
+    // Logic for creating the game would go here
   };
 
   return (
@@ -23,7 +35,7 @@ const JoinGameRoom: React.FC = () => {
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Join a Game Room
         </h2>
-        <form onSubmit={handleJoinGame} className="space-y-4">
+        <form onSubmit={handleJoinGame} className="space-y-4 mb-8">
           <div>
             <input
               type="text"
@@ -51,9 +63,47 @@ const JoinGameRoom: React.FC = () => {
             </button>
           </div>
         </form>
+        <hr className="my-8 border-gray-300" />
+        <div className="text-center">
+          <button
+            onClick={() => setShowCreateGame(!showCreateGame)}
+            className="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+          >
+            {showCreateGame ? "Hide Create Game Room" : "Create Game Room"}
+          </button>
+        </div>
+        {showCreateGame && (
+          <>
+            <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
+              Create a Game Room
+            </h2>
+            <form onSubmit={handleCreateGame} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  value={newGameName}
+                  onChange={(e) => setNewGameName(e.target.value)}
+                  placeholder="name"
+                  className="w-full px-3 py-1.5 rounded-full border-2 border-green-700 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                >
+                  Create Game
+                </button>
+              </div>
+            </form>
+
+              <p className="text-green-500 text-center mt-4 h-3">{gameCreated && <span>Game created!</span>}</p>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default JoinGameRoom;
+

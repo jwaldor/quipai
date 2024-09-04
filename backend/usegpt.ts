@@ -5,11 +5,13 @@ const client = new OpenAI({
 });
 
 export async function prompt_quip(topic: string) {
+  console.log("topic_prompt",topic)
+  console.log('quip prompt: ',`Generate a random funny Quiplash prompt for this topic: ${JSON.stringify(topic)} \n Examples of other Quiplash prompts:\n The worst theme for a pinball machine.\nWhat should be dumped on the losing coach at the end of a football game.`)
   const chatCompletion = await client.chat.completions.create({
     messages: [
       {
         role: "user",
-        content: `Generate a random funny Quiplash prompt for this topic: ${topic} \n Examples of other Quiplash prompts:\n The worst theme for a pinball machine.\nWhat should be dumped on the losing coach at the end of a football game.`,
+        content: `Generate a random funny Quiplash prompt for this topic: ${JSON.stringify(topic)} \n Examples of other Quiplash prompts:\n The worst theme for a pinball machine.\nWhat should be dumped on the losing coach at the end of a football game.`,
       },
     ],
     model: "gpt-4o-mini",
