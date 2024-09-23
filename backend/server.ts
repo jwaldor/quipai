@@ -1,5 +1,4 @@
 // src/index.js
-import client from "client";
 import { Server, Socket } from "socket.io"; // Update this import
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
