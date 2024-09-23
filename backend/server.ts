@@ -46,6 +46,7 @@ const gamestate: GameStateType = {
 };
 
 const origins = [process.env.FRONTEND_ADDRESS as string];
+console.log(origins,"origins")
 
 const server = createServer(app);
 const io = new Server({
