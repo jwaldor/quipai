@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "npx tsc && node server.js"
+  },
   "dependencies": {
     "@zodios/core": "^10.9.6",
     "@zodios/express": "^10.6.1",
@@ -17,5 +20,6 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.2.0",
     "typescript": "^5.5.4"
-  }
+  },
+  "type": "module"
 }
