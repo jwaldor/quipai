@@ -51,7 +51,7 @@ console.log(origins,"origins")
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: origins,
+    origin: "*",
   },
 });
 io.listen(4000);
