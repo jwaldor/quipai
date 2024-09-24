@@ -4,4 +4,5 @@ import { io } from "socket.io-client";
 // // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
+console.log(import.meta.env.VITE_BACKEND_ADDRESS)
 export const socket = io(import.meta.env.VITE_BACKEND_ADDRESS as string);
