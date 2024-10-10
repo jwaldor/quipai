@@ -8,6 +8,7 @@ import { prompt_quip, get_winner } from "usegpt";
 const app: Express = express();
 const { createServer } = require("node:http");
 const port = Number(process.env.PORT) || 4000;
+console.log("port", port);
 
 // const jwt = require("express-jwt");
 
