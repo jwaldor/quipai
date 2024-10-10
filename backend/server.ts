@@ -45,7 +45,7 @@ const gamestate: GameStateType = {
   last_winner: undefined,
 };
 
-const origins = [process.env.FRONTEND_ADDRESS as string];
+const origins = "*"//[process.env.FRONTEND_ADDRESS as string];
 console.log(origins,"origins")
 
 const server = createServer(app);
