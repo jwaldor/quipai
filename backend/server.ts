@@ -51,7 +51,7 @@ const origins = [
   "http://localhost:5173",
 ];
 
-const server = createServer((req: Request, res: Response) => {
+const server = createServer((req: any, res: any) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/plain");
   res.end("Hello World\n");
