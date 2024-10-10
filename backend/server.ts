@@ -51,7 +51,11 @@ const origins = [
   "http://localhost:5173",
 ];
 
-const server = createServer(app);
+const server = createServer((req: Request, res: Response) => {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/plain");
+  res.end("Hello World\n");
+});
 
 const server2 = server.listen(port, "0.0.0.0", () => {
   console.log("server listening on port", port);
