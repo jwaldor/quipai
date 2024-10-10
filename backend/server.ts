@@ -52,13 +52,13 @@ const origins = [
 ];
 
 const server = createServer(app);
-const io = new Server({
+const io = new Server(server, {
   cors: {
     origin: origins,
   },
 });
-io.listen(port);
-
+server.listen(port);
+// io.listen(port);
 // Extend the Socket type to include gamestate
 declare module "socket.io" {
   interface Socket {
