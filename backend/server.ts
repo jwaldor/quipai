@@ -57,7 +57,9 @@ const io = new Server(server, {
     origin: origins,
   },
 });
-server.listen(port);
+server.listen(port, "0.0.0.0", () => {
+  console.log("server listening on port", port);
+});
 // io.listen(port);
 // Extend the Socket type to include gamestate
 declare module "socket.io" {

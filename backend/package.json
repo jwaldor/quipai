@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "npx tsc && node server.js"
+  },
   "dependencies": {
     "@zodios/core": "^10.9.6",
     "@zodios/express": "^10.6.1",
