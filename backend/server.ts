@@ -52,13 +52,15 @@ const origins = [
 ];
 
 const server = createServer(app);
-const io = new Server(server, {
+
+const server2 = server.listen(port, "0.0.0.0", () => {
+  console.log("server listening on port", port);
+});
+
+const io = new Server(server2, {
   cors: {
     origin: origins,
   },
-});
-server.listen(port, "0.0.0.0", () => {
-  console.log("server listening on port", port);
 });
 // io.listen(port);
 // Extend the Socket type to include gamestate
