@@ -2,10 +2,11 @@
 import { Server, Socket } from "socket.io"; // Update this import
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
+import { createServer } from "http";
 // import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
-const { createServer } = require("node:http");
+// const { createServer } = require("node:http");
 const port = Number(process.env.PORT) || 4000;
 console.log("port", port);
 
@@ -18,6 +19,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(cors());
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
 const MAX_ROUNDS = 4;
 const START_TIME_LIMIT = 30;
@@ -49,22 +54,30 @@ const gamestate: GameStateType = {
 const origins = [
   process.env.FRONTEND_ADDRESS as string,
   "http://localhost:5173",
+  "*", // DANGEROUS: just to rule this out as a cause of cors issues
 ];
 
-const server = createServer((req: any, res: any) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-  res.end("Hello World\n");
-});
+// const server = createServer((req: any, res: any) => {
+//   res.statusCode = 200;
+//   res.setHeader("Content-Type", "text/plain");
+//   res.end("Hello World\n");
+// });
 
-const server2 = server.listen(port, "0.0.0.0", () => {
-  console.log("server listening on port", port);
-});
+// const server2 = server.listen(port, "0.0.0.0", () => {
+//   console.log("server listening on port", port);
+// });
 
-const io = new Server(server2, {
+const server = createServer(app);
+
+const io = new Server(server, {
   cors: {
     origin: origins,
+    methods: ["GET", "POST"],
+    credentials: true,
   },
+  pingTimeout: 60000, // Increase ping timeout to 60 seconds
+  pingInterval: 25000, // Ping every 25 seconds
+  transports: ["websocket", "polling"], // Enable both WebSocket and polling
 });
 // io.listen(port);
 // Extend the Socket type to include gamestate
@@ -141,6 +154,7 @@ export const gamestates: Array<{ name: string; gamestate: GameStateType }> = [];
 // });
 
 io.on("connection", (socket) => {
+  console.log("Client connected!", socket.id);
   function generatePrompt(topic: string) {
     console.log("topic", socket.gamestate!.gamestate.topic_state?.topic);
     if (socket.gamestate!.gamestate.topic_state) {
@@ -404,3 +418,7 @@ export async function get_winner(answers: Map<string, string>, prompt: string) {
     return;
   }
 }
+
+server.listen(port, () => {
+  console.log(`Server running on port http://localhost:${port}`);
+});
