@@ -1,10 +1,12 @@
 import React, { useContext, useState } from "react";
 import { socket } from "../routes/socket";
 import { AccessContext } from "../helpers/StateProvider";
-
-
+import { useParams } from 'react-router-dom';
 
 const JoinGameRoom: React.FC = () => {
+  const params = useParams();
+  console.log("URL params:", params);
+
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
   const [newGameName, setNewGameName] = useState("");
@@ -145,4 +147,3 @@ const JoinGameRoom: React.FC = () => {
 };
 
 export default JoinGameRoom;
-
