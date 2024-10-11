@@ -3,6 +3,8 @@ import { Server, Socket } from "socket.io"; // Update this import
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import { createServer } from "http";
+import { randomBytes } from "crypto";
+
 // import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
@@ -28,6 +30,65 @@ const MAX_ROUNDS = 4;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
+
+function generateStrangeWord(): string {
+  const prefixes = [
+    "cyber",
+    "quantum",
+    "neo",
+    "hyper",
+    "astro",
+    "mega",
+    "ultra",
+    "omni",
+    "retro",
+    "crypto",
+  ];
+  const roots = [
+    "punk",
+    "flux",
+    "nova",
+    "nexus",
+    "quark",
+    "zephyr",
+    "vortex",
+    "synth",
+    "pulse",
+    "nebula",
+  ];
+  const suffixes = [
+    "oid",
+    "tron",
+    "scape",
+    "verse",
+    "matic",
+    "core",
+    "sphere",
+    "naut",
+    "mancer",
+    "forge",
+  ];
+
+  const usePrefix = Math.random() < 0.7;
+  const useSuffix = Math.random() < 0.5;
+
+  let word = roots[Math.floor(Math.random() * roots.length)];
+
+  if (usePrefix) {
+    word = prefixes[Math.floor(Math.random() * prefixes.length)] + word;
+  }
+
+  if (useSuffix) {
+    word += suffixes[Math.floor(Math.random() * suffixes.length)];
+  }
+
+  // Capitalize the first letter
+  word = word.charAt(0).toUpperCase() + word.slice(1);
+
+  // Add a random number (0-999) to ensure uniqueness
+  const randomNum = parseInt(randomBytes(2).toString("hex"), 16) % 1000;
+  return `${word}${randomNum.toString().padStart(3, "0")}`;
+}
 
 export type GameStateType = {
   mode: "start" | "topic" | "ask" | "results" | "end";
