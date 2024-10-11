@@ -130,7 +130,7 @@ function broadcastStates() {
       state.gamestate.count_time--;
     }
     if (state.gamestate.mode === "ask" && state.gamestate.count_time === 0) {
-      state.gamestate.mode = "results";
+      transitionResults(state.gamestate);
     }
   });
 }
@@ -180,6 +180,25 @@ console.log("gamestates", gamestates);
 // io.on("new_namespace", (namespace) => {
 //   namespace.use(assignMiddle);
 // });
+function transitionResults(state: GameStateType) {
+  state.mode = "results";
+  console.log("judging answers");
+  if (state.ask_state) {
+    // console.log("answers",gamestate.ask_state.answers)
+    get_winner(state.ask_state?.answers, state.ask_state?.prompt).then(
+      (res) => {
+        console.log("judgment", res);
+        state.last_winner = res;
+        state.users.forEach((user) => {
+          if (user.id === state.last_winner) {
+            user.score += 1;
+          }
+        });
+      }
+    );
+  }
+  state.count_time = RESULTS_TIME_LIMIT;
+}
 
 io.on("connection", (socket) => {
   console.log("Client connected!", socket.id);
@@ -195,23 +214,6 @@ io.on("connection", (socket) => {
     return "No prompt generated";
   }
 
-  function judgeAnswers() {
-    if (socket.gamestate!.gamestate.ask_state) {
-      // console.log("answers",gamestate.ask_state.answers)
-      get_winner(
-        socket.gamestate!.gamestate.ask_state?.answers,
-        socket.gamestate!.gamestate.ask_state?.prompt
-      ).then((res) => {
-        console.log("judgment", res);
-        socket.gamestate!.gamestate.last_winner = res;
-        socket.gamestate!.gamestate.users.forEach((user) => {
-          if (user.id === socket.gamestate!.gamestate.last_winner) {
-            user.score += 1;
-          }
-        });
-      });
-    }
-  }
   console.log("connecton started");
   // socket.use(assignMiddle)
   socket.use((packet, next) => {
@@ -329,10 +331,7 @@ io.on("connection", (socket) => {
         socket.gamestate!.gamestate.ask_state.answers.size ===
         socket.gamestate!.gamestate.users.length
       ) {
-        socket.gamestate!.gamestate.mode = "results";
-        console.log("judging answers");
-        judgeAnswers();
-        socket.gamestate!.gamestate.count_time = RESULTS_TIME_LIMIT;
+        transitionResults(socket.gamestate!.gamestate);
       }
     } else {
       console.error(
