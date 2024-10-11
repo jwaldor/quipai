@@ -65,6 +65,7 @@ const origins = [
 // const server2 = server.listen(port, "0.0.0.0", () => {
 //   console.log("server listening on port", port);
 // });
+console.log(origins,"origins")
 
 const server = createServer(app);
 
