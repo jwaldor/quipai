@@ -110,7 +110,6 @@ function broadcastStates() {
 
 function broadcastState(state: GameStateType) {
   state.users.forEach((user) => {
-    console.log("broadcasting state to", state, user.id);
     io.to(user.id).emit("gamestate", state);
   });
 }
@@ -199,7 +198,7 @@ io.on("connection", (socket) => {
   socket.on("creategame", (gamename) => {
     console.log("creating game");
     gamestates.push({
-      name: gamename,
+      name: gamename.toLowerCase(),
       gamestate: {
         mode: "start",
         ask_state: undefined,
