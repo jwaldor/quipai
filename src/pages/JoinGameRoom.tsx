@@ -1,7 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { socket } from "../routes/socket";
 import { AccessContext } from "../helpers/StateProvider";
 import { useParams } from 'react-router-dom';
+import QRCode from 'qrcode'
+
 
 const JoinGameRoom: React.FC = () => {
   const {gamename} = useParams();
@@ -9,6 +11,13 @@ const JoinGameRoom: React.FC = () => {
   useEffect(() => {
     if (gamename) {
       setGameName(gamename);
+      // const canvas = document.getElementById('qrCanvas')
+
+       if (qrRef.current) {
+      QRCode.toCanvas(qrRef.current, 'Your QR data here', (error) => {
+        if (error) console.error('Error generating QR code', error);
+      });
+    }
     }
   }, []);
 
@@ -58,6 +67,8 @@ const JoinGameRoom: React.FC = () => {
     });
   };
   console.log("autoName",autoName,!autoName);
+
+  const qrRef = useRef<HTMLCanvasElement>(null);
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center">
@@ -143,7 +154,12 @@ const JoinGameRoom: React.FC = () => {
               
               <p className="text-green-500 text-center mt-4 h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
               {autoName && gameCreated && <p className="text-gray-600 text-center mt-2">You can now join this game room & share the name with your friends!</p>}
-
+          {autoName && gameCreated && (
+            <div id="qrcode" className="mt-4 text-center">
+              <h3 className="text-lg font-semibold mb-2">Share this QR code to invite friends:</h3>
+              <canvas id="qrCanvas" className="mx-auto"></canvas>
+            </div>
+          )}
           </>
         )}
       </div>
