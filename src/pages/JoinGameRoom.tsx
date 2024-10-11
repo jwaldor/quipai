@@ -49,7 +49,7 @@ const JoinGameRoom: React.FC = () => {
       }
     });
   };
-
+  console.log("autoName",autoName,!autoName);
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center">
@@ -131,8 +131,9 @@ const JoinGameRoom: React.FC = () => {
                 </button>
               </div>
             </form>
-            <div className="mt-4">{autoName ? `Game created with name: ${autoName}` : ""}</div>
-              <p className="text-green-500 text-center mt-4 h-3">{gameCreated && <span>Game created!</span>}</p>
+              <p className="text-green-500 text-center mt-4 h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
+              <p className="text-green-500 text-center mt-4 h-3">{autoName && gameCreated && <span>Game created: {autoName}</span>}</p>
+
           </>
         )}
       </div>
