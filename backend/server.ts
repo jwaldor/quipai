@@ -241,19 +241,24 @@ io.on("connection", (socket) => {
       },
     });
   });
-  socket.on("addusergame", (gamename, name) => {
+  socket.on("addusergame", (gamename, name, callback) => {
     console.log("adding user");
     console.log("games", gamestates);
     const thegame = gamestates.find((game) => game.name === gamename);
     if (thegame) {
-      thegame.gamestate.users.push({
-        name: name,
-        score: 0,
-        id: socket.id,
-        disconnection_time: undefined,
-      });
-      console.log("new gamestates", gamestates);
-      broadcastState(thegame.gamestate);
+      if (!thegame.gamestate.users.find((user) => user.name === name)) {
+        thegame.gamestate.users.push({
+          name: name,
+          score: 0,
+          id: socket.id,
+          disconnection_time: undefined,
+        });
+        console.log("new gamestates", gamestates);
+        broadcastState(thegame.gamestate);
+        callback(true);
+      } else {
+        callback(false);
+      }
     } else {
       console.error("error, game not found");
     }
