@@ -34,7 +34,7 @@ export type GameStateType = {
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
   answers: Array<{ text: string; user_id: string }>;
   topic_state: { topic: string } | undefined;
-  elapsed_rounds: number;
+  remaining_rounds: number;
   count_time: number | undefined;
   users: Array<{ name: string; score: number; id: string }>;
   last_winner: string | undefined;
@@ -47,7 +47,7 @@ const gamestate: GameStateType = {
   topic_state: undefined,
   users: [],
   count_time: undefined,
-  elapsed_rounds: -1,
+  remaining_rounds: 4,
   last_winner: undefined,
 };
 
@@ -207,7 +207,7 @@ io.on("connection", (socket) => {
         topic_state: undefined,
         users: [],
         count_time: undefined,
-        elapsed_rounds: -1,
+        remaining_rounds: 4,
         last_winner: undefined,
       },
     });
@@ -234,8 +234,8 @@ io.on("connection", (socket) => {
   // });
   socket.on("begingame", () => {
     console.log("beginning game");
-    socket.gamestate!.gamestate.elapsed_rounds++;
-    if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS) {
+    socket.gamestate!.gamestate.remaining_rounds--;
+    if (socket.gamestate!.gamestate.remaining_rounds === -1) {
       socket.gamestate!.gamestate.mode = "end";
     } else {
       socket.gamestate!.gamestate.mode = "topic";
@@ -256,9 +256,9 @@ io.on("connection", (socket) => {
       answers: [],
       topic_state: undefined,
       count_time: undefined,
-      elapsed_rounds: -1,
+      remaining_rounds: 4,
     };
-    socket.gamestate!.gamestate.elapsed_rounds++;
+    socket.gamestate!.gamestate.remaining_rounds++;
     socket.gamestate!.gamestate.mode = "topic";
     // socket.gamestate!.gamestate.elapsed_rounds++
     // if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
