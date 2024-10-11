@@ -257,7 +257,6 @@ io.on("connection", (socket) => {
       count_time: undefined,
       remaining_rounds: 4,
     };
-    socket.gamestate!.gamestate.remaining_rounds++;
     socket.gamestate!.gamestate.mode = "topic";
     // socket.gamestate!.gamestate.elapsed_rounds++
     // if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){
