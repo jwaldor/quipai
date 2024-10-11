@@ -99,7 +99,7 @@ const JoinGameRoom: React.FC = () => {
             <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
               Create a Game Room
             </h2>
-            <form onSubmit={handleCreateGame} className="space-y-4">
+            {/* <form onSubmit={handleCreateGame} className="space-y-4">
               <div>
                 <input
                   type="text"
@@ -117,7 +117,7 @@ const JoinGameRoom: React.FC = () => {
                   Create Game
                 </button>
               </div>
-            </form>
+            </form> */}
             <form onSubmit={handleAutoCreateGame} className="space-y-4">
               <div>
                 
