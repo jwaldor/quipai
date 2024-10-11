@@ -36,19 +36,14 @@ export type GameStateType = {
   topic_state: { topic: string } | undefined;
   remaining_rounds: number;
   count_time: number | undefined;
-  users: Array<{ name: string; score: number; id: string }>;
+  users: Array<{
+    name: string;
+    score: number;
+    id: string;
+    disconnection_time: number | undefined;
+  }>;
   last_winner: string | undefined;
-};
-
-const gamestate: GameStateType = {
-  mode: "start",
-  ask_state: undefined,
-  answers: [],
-  topic_state: undefined,
-  users: [],
-  count_time: undefined,
-  remaining_rounds: 4,
-  last_winner: undefined,
+  empty_time: number | undefined;
 };
 
 const origins = [process.env.FRONTEND_ADDRESS as string];
@@ -85,13 +80,45 @@ declare module "socket.io" {
   }
 }
 
+// Function to check if a specific socket ID is connected
+function isUserConnected(socketId: string) {
+  const socket = io.sockets.sockets.get(socketId);
+  return socket ? socket.connected : false;
+}
+
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
   gamestates.forEach((state) => {
     console.log("broadcast state to", state.gamestate);
     state.gamestate.users.forEach((user) => {
       io.to(user.id).emit("gamestate", state.gamestate);
+      if (!isUserConnected(user.id) && !user.disconnection_time) {
+        console.log("user", user.id, "not connected");
+        user.disconnection_time = Date.now();
+      } else if (!isUserConnected(user.id) && user.disconnection_time) {
+        if (Date.now() - user.disconnection_time > 100000) {
+          console.log("removing user", user.id);
+          state.gamestate.users = state.gamestate.users.filter(
+            (u) => u.id !== user.id
+          );
+        }
+      }
     });
+    if (state.gamestate.users.length === 0 && !state.gamestate.empty_time) {
+      state.gamestate.empty_time = Date.now();
+    } else if (
+      state.gamestate.users.length === 0 &&
+      state.gamestate.empty_time &&
+      Date.now() - state.gamestate.empty_time > 100000
+    ) {
+      console.log("removing game", state.name);
+      const index = gamestates.findIndex((g) => g.name === state.name);
+      if (index !== -1) gamestates.splice(index, 1);
+    } else if (state.gamestate.empty_time && state.gamestate.users.length > 0) {
+      console.log("resetting empty time for", state.name);
+      state.gamestate.empty_time = undefined;
+    }
+
     // io.emit("gamestate", gamestate);
 
     if (state.gamestate.mode === "results") {
@@ -209,6 +236,7 @@ io.on("connection", (socket) => {
         count_time: undefined,
         remaining_rounds: 4,
         last_winner: undefined,
+        empty_time: undefined,
       },
     });
   });
@@ -217,7 +245,12 @@ io.on("connection", (socket) => {
     console.log("games", gamestates);
     const thegame = gamestates.find((game) => game.name === gamename);
     if (thegame) {
-      thegame.gamestate.users.push({ name: name, score: 0, id: socket.id });
+      thegame.gamestate.users.push({
+        name: name,
+        score: 0,
+        id: socket.id,
+        disconnection_time: undefined,
+      });
       console.log("new gamestates", gamestates);
       broadcastState(thegame.gamestate);
     } else {
@@ -250,6 +283,7 @@ io.on("connection", (socket) => {
         id: user.id,
         name: user.name,
         score: 0,
+        disconnection_time: undefined,
       })),
       mode: "topic",
       ask_state: undefined,
