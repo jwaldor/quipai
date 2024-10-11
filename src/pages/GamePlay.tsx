@@ -56,6 +56,8 @@ const GamePlay = () => {
           </p>
         </div>
       )}
+      <div>{gamestate.count_time ?? gamestate.count_time}</div>
+
     </>
   );
 };
