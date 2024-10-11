@@ -52,6 +52,7 @@ const gamestate: GameStateType = {
 };
 
 const origins = [process.env.FRONTEND_ADDRESS as string];
+console.log("origins", origins);
 
 // const server = createServer((req: any, res: any) => {
 //   res.statusCode = 200;
