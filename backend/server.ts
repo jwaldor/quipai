@@ -34,7 +34,7 @@ export type GameStateType = {
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
   answers: Array<{ text: string; user_id: string }>;
   topic_state: { topic: string } | undefined;
-  elapsed_rounds: number;
+  remaining_rounds: number;
   count_time: number | undefined;
   users: Array<{ name: string; score: number; id: string }>;
   last_winner: string | undefined;
@@ -47,14 +47,11 @@ const gamestate: GameStateType = {
   topic_state: undefined,
   users: [],
   count_time: undefined,
-  elapsed_rounds: -1,
+  remaining_rounds: 4,
   last_winner: undefined,
 };
 
-const origins = [
-  process.env.FRONTEND_ADDRESS as string,
-  "http://localhost:5173",
-];
+const origins = [process.env.FRONTEND_ADDRESS as string];
 
 // const server = createServer((req: any, res: any) => {
 //   res.statusCode = 200;
@@ -65,7 +62,7 @@ const origins = [
 // const server2 = server.listen(port, "0.0.0.0", () => {
 //   console.log("server listening on port", port);
 // });
-console.log(origins,"origins")
+console.log(origins, "origins");
 
 const server = createServer(app);
 
@@ -89,23 +86,26 @@ declare module "socket.io" {
 
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
-  gamestates.forEach((state) =>
+  gamestates.forEach((state) => {
+    console.log("broadcast state to", state.gamestate);
     state.gamestate.users.forEach((user) => {
       io.to(user.id).emit("gamestate", state.gamestate);
-    })
-  );
-  // io.emit("gamestate", gamestate);
-  if (gamestate.mode === "results") {
-    console.log("gamestate", gamestate);
-  }
-  // console.log("io", roomName, gameState);
-  // console.log(io.in(roomName).fetchSockets());
-  if (gamestate.count_time && gamestate.count_time > 0) {
-    gamestate.count_time--;
-  }
-  if (gamestate.mode === "ask" && gamestate.count_time === 0) {
-    gamestate.mode = "results";
-  }
+    });
+    // io.emit("gamestate", gamestate);
+
+    if (state.gamestate.mode === "results") {
+      console.log("gamestate", state.gamestate);
+    }
+    // console.log("io", roomName, gameState);
+    // console.log(io.in(roomName).fetchSockets());
+    if (state.gamestate.count_time && state.gamestate.count_time > 0) {
+      console.log("count_time", state.gamestate.count_time);
+      state.gamestate.count_time--;
+    }
+    if (state.gamestate.mode === "ask" && state.gamestate.count_time === 0) {
+      state.gamestate.mode = "results";
+    }
+  });
 }
 
 function broadcastState(state: GameStateType) {
@@ -128,6 +128,7 @@ function clearPalette(state: GameStateType) {
 }
 
 export const gamestates: Array<{ name: string; gamestate: GameStateType }> = [];
+console.log("gamestates", gamestates);
 
 // declare module 'socket.io' {
 //   interface Socket {
@@ -197,7 +198,7 @@ io.on("connection", (socket) => {
   socket.on("creategame", (gamename) => {
     console.log("creating game");
     gamestates.push({
-      name: gamename,
+      name: gamename.toLowerCase(),
       gamestate: {
         mode: "start",
         ask_state: undefined,
@@ -205,7 +206,7 @@ io.on("connection", (socket) => {
         topic_state: undefined,
         users: [],
         count_time: undefined,
-        elapsed_rounds: -1,
+        remaining_rounds: 4,
         last_winner: undefined,
       },
     });
@@ -232,8 +233,8 @@ io.on("connection", (socket) => {
   // });
   socket.on("begingame", () => {
     console.log("beginning game");
-    socket.gamestate!.gamestate.elapsed_rounds++;
-    if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS) {
+    socket.gamestate!.gamestate.remaining_rounds--;
+    if (socket.gamestate!.gamestate.remaining_rounds === -1) {
       socket.gamestate!.gamestate.mode = "end";
     } else {
       socket.gamestate!.gamestate.mode = "topic";
@@ -254,9 +255,8 @@ io.on("connection", (socket) => {
       answers: [],
       topic_state: undefined,
       count_time: undefined,
-      elapsed_rounds: -1,
+      remaining_rounds: 4,
     };
-    socket.gamestate!.gamestate.elapsed_rounds++;
     socket.gamestate!.gamestate.mode = "topic";
     // socket.gamestate!.gamestate.elapsed_rounds++
     // if (socket.gamestate!.gamestate.elapsed_rounds >= MAX_ROUNDS){

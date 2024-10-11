@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { socket } from "../routes/socket";
+import { AccessContext } from "../helpers/StateProvider";
 
 
 
@@ -9,7 +10,9 @@ const JoinGameRoom: React.FC = () => {
   const [newGameName, setNewGameName] = useState("");
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [gameCreated, setGameCreated] = useState(false);
+  const { gamestate } = useContext(AccessContext);
 
+  console.log("gamestate", gamestate);
   // const { gamestate } = useContext(AccessContext);
 
   const handleJoinGame = (e: React.FormEvent) => {
@@ -28,6 +31,7 @@ const JoinGameRoom: React.FC = () => {
     setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
     // Logic for creating the game would go here
   };
+
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center">

@@ -7,7 +7,7 @@ export type GameStateType = {
   ask_state: { prompt: string; answers: Map<string, string> } | undefined;
   answers: Array<{ text: string; user_id:string;}>;
   topic_state: { topic: string } | undefined;
-  elapsed_rounds: number;
+  remaining_rounds: number;
   count_time: number | undefined;
   users: Array<{ name: string; score: number; id: string }>;
   last_winner: string | undefined;
@@ -24,7 +24,7 @@ export const AccessContext = createContext<{
     topic_state: undefined,
     users: [],
     count_time: undefined,
-    elapsed_rounds: 0,
+    remaining_rounds: 0,
     last_winner: undefined,
   },
   userstate: "not_joined"
@@ -42,7 +42,7 @@ export const StateProvider: FC<Props> = ({ children }) => {
     topic_state: undefined,
     users: [],
     count_time: undefined,
-    elapsed_rounds: 0,
+    remaining_rounds: 0,
     last_winner: undefined,
   });
   const [userstate,setUserState] = useState<"joined" | "not_joined">("not_joined")

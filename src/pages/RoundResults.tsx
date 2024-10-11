@@ -89,6 +89,12 @@ const RoundResults = () => {
         >
           Next Round
         </button>
+          
+      </div>
+      <div className="flex flex-row w-full justify-center pr-2 text-2xl fixed bottom-0">
+        <span className={`${gamestate.remaining_rounds > 2 ? 'text-green-900' : gamestate.remaining_rounds > 1 ? 'text-yellow-500' : 'text-red-500'}`}>
+          Rounds remaining: {gamestate.remaining_rounds}
+        </span>
       </div>
     </div>
   );

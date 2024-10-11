@@ -24,7 +24,6 @@ function App() {
   // states are joinGame,
 
   const { gamestate,userstate } = useContext(AccessContext);
-  console.log('got state', gamestate)
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 mx-auto">
