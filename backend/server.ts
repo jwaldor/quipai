@@ -54,7 +54,6 @@ const gamestate: GameStateType = {
 const origins = [
   process.env.FRONTEND_ADDRESS as string,
   "http://localhost:5173",
-  "*", // DANGEROUS: just to rule this out as a cause of cors issues
 ];
 
 // const server = createServer((req: any, res: any) => {

@@ -50,6 +50,7 @@ export const StateProvider: FC<Props> = ({ children }) => {
   // const redirectUri = import.meta.env.VITE_REDIRECT_URI;
   // function seekSong()
   useEffect(() => {
+    
     const fetchData = async () => {
       socket.on("gamestate", (state) => {
         if (userstate === "not_joined"){
