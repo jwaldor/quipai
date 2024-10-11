@@ -58,6 +58,9 @@ export const StateProvider: FC<Props> = ({ children }) => {
         console.log("state", state);
         setGameState(state);
       });
+      // socket.on('disconnect', function(){
+      //   setUserState("not_joined")
+      // });
       // console.log("creating game");
       // socket.emit("creategame", "game1");
       // await new Promise(r => setTimeout(r, 3000));
