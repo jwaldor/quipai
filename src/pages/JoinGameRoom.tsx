@@ -42,6 +42,7 @@ const JoinGameRoom: React.FC = () => {
     socket.emit("autocreategame", (gamename: string) => {
       if (gamename) {
         setGameCreated(true); // Show success message
+        setAutoName(gamename);
       }
       else {
         alert("Could not create game. Perhaps unique name could not be generated.");
@@ -117,7 +118,20 @@ const JoinGameRoom: React.FC = () => {
                 </button>
               </div>
             </form>
-
+            <form onSubmit={handleAutoCreateGame} className="space-y-4">
+              <div>
+                
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                >
+                  Create Game auto
+                </button>
+              </div>
+            </form>
+            <div className="mt-4">{autoName ? `Game created with name: ${autoName}` : ""}</div>
               <p className="text-green-500 text-center mt-4 h-3">{gameCreated && <span>Game created!</span>}</p>
           </>
         )}
