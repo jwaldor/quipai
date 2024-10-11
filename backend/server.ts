@@ -89,7 +89,6 @@ function isUserConnected(socketId: string) {
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
   gamestates.forEach((state) => {
-    console.log("broadcast state to", state.gamestate);
     state.gamestate.users.forEach((user) => {
       io.to(user.id).emit("gamestate", state.gamestate);
       if (!isUserConnected(user.id) && !user.disconnection_time) {
@@ -122,7 +121,7 @@ function broadcastStates() {
     // io.emit("gamestate", gamestate);
 
     if (state.gamestate.mode === "results") {
-      console.log("gamestate", state.gamestate);
+      // console.log("gamestate", state.gamestate);
     }
     // console.log("io", roomName, gameState);
     // console.log(io.in(roomName).fetchSockets());
@@ -189,7 +188,6 @@ io.on("connection", (socket) => {
     if (socket.gamestate!.gamestate.topic_state) {
       return prompt_quip(socket.gamestate!.gamestate.topic_state.topic).then(
         (res) => {
-          console.log("res", res);
           return res;
         }
       );
@@ -204,6 +202,7 @@ io.on("connection", (socket) => {
         socket.gamestate!.gamestate.ask_state?.answers,
         socket.gamestate!.gamestate.ask_state?.prompt
       ).then((res) => {
+        console.log("judgment", res);
         socket.gamestate!.gamestate.last_winner = res;
         socket.gamestate!.gamestate.users.forEach((user) => {
           if (user.id === socket.gamestate!.gamestate.last_winner) {

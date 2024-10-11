@@ -75,6 +75,21 @@ const RoundResults = () => {
               </div>
             );
           })}
+          {(() => {
+            const usersWithAnswers = gamestate.answers.map((answer) => answer.user_id)
+            console.log("usersWithAnswers",usersWithAnswers)
+            console.log(gamestate.last_winner)
+            return gamestate.users.filter((user) => !usersWithAnswers.includes(user.id)).map((user) => {
+            console.log("answer",user)
+            // const user = users.find(u => u.id === userId);
+            return (
+              <div key={user.id} className="bg-gray-100 p-4 rounded-lg">
+                <p className="text-lg font-medium text-gray-800">{user.name}</p>
+                <p className="text-gray-600">No answer</p>
+                <p className="text-sm text-gray-500 mt-2">Score: {user.score}</p>
+              </div>
+            );
+          })})()}
         </div>
       </div>
 
