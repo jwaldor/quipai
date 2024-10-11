@@ -18,7 +18,11 @@ const JoinGameRoom: React.FC = () => {
   const handleJoinGame = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Joining game with", { gameName, userName });
-    socket.emit("addusergame", gameName, userName,(success: boolean) => console.log("success",success));
+    socket.emit("addusergame", gameName, userName,(success: boolean) => {console.log("success",success)
+      if (!success) {
+        alert("Name already taken");
+      }
+    });
     // Logic for joining the game would go here
   };
 
