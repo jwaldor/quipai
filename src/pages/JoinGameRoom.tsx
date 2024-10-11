@@ -10,18 +10,6 @@ const JoinGameRoom: React.FC = () => {
   const qrRef = useRef<HTMLCanvasElement>(null);
 
   console.log("URL params:", gamename);
-  useEffect(() => {
-    if (gamename) {
-      setGameName(gamename);
-      // const canvas = document.getElementById('qrCanvas')
-
-       if (qrRef.current) {
-      QRCode.toCanvas(qrRef.current, `https://quipai.onrender.com/${gamename}`, (error) => {
-        if (error) console.error('Error generating QR code', error);
-      });
-    }
-    }
-  }, [qrRef]);
 
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
@@ -30,6 +18,24 @@ const JoinGameRoom: React.FC = () => {
   const [gameCreated, setGameCreated] = useState(false);
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const { gamestate } = useContext(AccessContext);
+
+  useEffect(() => {
+    
+    if (gamename) {
+      setGameName(gamename);
+      // const canvas = document.getElementById('qrCanvas')
+
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("qrRef",qrRef.current);
+    if (qrRef.current) {
+     console.log("qrRef not null",qrRef.current);
+   QRCode.toCanvas(qrRef.current, `https://quipai.onrender.com/${gamename}`, (error) => {
+     if (error) console.error('Error generating QR code', error);
+   });
+ }},[autoName])
 
   console.log("gamestate", gamestate);
   // const { gamestate } = useContext(AccessContext);
