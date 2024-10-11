@@ -43,6 +43,7 @@ const JoinGameRoom: React.FC = () => {
       if (gamename) {
         setGameCreated(true); // Show success message
         setAutoName(gamename);
+        setGameName(gamename);
       }
       else {
         alert("Could not create game. Perhaps unique name could not be generated.");
@@ -127,7 +128,7 @@ const JoinGameRoom: React.FC = () => {
                   type="submit"
                   className="w-full bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
-                  Create Game auto
+                  Create Game
                 </button>
               </div>
             </form>
