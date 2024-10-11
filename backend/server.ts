@@ -51,10 +51,7 @@ const gamestate: GameStateType = {
   last_winner: undefined,
 };
 
-const origins = [
-  process.env.FRONTEND_ADDRESS as string,
-  "http://localhost:5173",
-];
+const origins = [process.env.FRONTEND_ADDRESS as string];
 
 // const server = createServer((req: any, res: any) => {
 //   res.statusCode = 200;
@@ -65,7 +62,7 @@ const origins = [
 // const server2 = server.listen(port, "0.0.0.0", () => {
 //   console.log("server listening on port", port);
 // });
-console.log(origins,"origins")
+console.log(origins, "origins");
 
 const server = createServer(app);
 
@@ -89,27 +86,31 @@ declare module "socket.io" {
 
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
-  gamestates.forEach((state) =>
+  gamestates.forEach((state) => {
+    console.log("broadcast state to", state.gamestate);
     state.gamestate.users.forEach((user) => {
       io.to(user.id).emit("gamestate", state.gamestate);
-    })
-  );
-  // io.emit("gamestate", gamestate);
-  if (gamestate.mode === "results") {
-    console.log("gamestate", gamestate);
-  }
-  // console.log("io", roomName, gameState);
-  // console.log(io.in(roomName).fetchSockets());
-  if (gamestate.count_time && gamestate.count_time > 0) {
-    gamestate.count_time--;
-  }
-  if (gamestate.mode === "ask" && gamestate.count_time === 0) {
-    gamestate.mode = "results";
-  }
+    });
+    // io.emit("gamestate", gamestate);
+
+    if (state.gamestate.mode === "results") {
+      console.log("gamestate", state.gamestate);
+    }
+    // console.log("io", roomName, gameState);
+    // console.log(io.in(roomName).fetchSockets());
+    if (state.gamestate.count_time && state.gamestate.count_time > 0) {
+      console.log("count_time", state.gamestate.count_time);
+      state.gamestate.count_time--;
+    }
+    if (state.gamestate.mode === "ask" && state.gamestate.count_time === 0) {
+      state.gamestate.mode = "results";
+    }
+  });
 }
 
 function broadcastState(state: GameStateType) {
   state.users.forEach((user) => {
+    console.log("broadcasting state to", state, user.id);
     io.to(user.id).emit("gamestate", state);
   });
 }
@@ -128,6 +129,7 @@ function clearPalette(state: GameStateType) {
 }
 
 export const gamestates: Array<{ name: string; gamestate: GameStateType }> = [];
+console.log("gamestates", gamestates);
 
 // declare module 'socket.io' {
 //   interface Socket {
