@@ -302,6 +302,35 @@ io.on("connection", (socket) => {
       },
     });
   });
+  socket.on("autocreategame", (callback) => {
+    console.log("creating game");
+    let gamename: string | undefined = generateStrangeWord();
+    let tries = 0;
+    while (gamestates.find((game) => game.name === gamename) && tries < 5) {
+      gamename = generateStrangeWord();
+      tries++;
+    }
+    if (tries >= 5) {
+      console.error("could not generate unique gamename");
+      gamename = undefined;
+    } else {
+      gamestates.push({
+        name: gamename.toLowerCase(),
+        gamestate: {
+          mode: "start",
+          ask_state: undefined,
+          answers: [],
+          topic_state: undefined,
+          users: [],
+          count_time: undefined,
+          remaining_rounds: 4,
+          last_winner: undefined,
+          empty_time: undefined,
+        },
+      });
+    }
+    callback(gamename);
+  });
   socket.on("addusergame", (gamename, name, callback) => {
     console.log("adding user");
     console.log("games", gamestates);

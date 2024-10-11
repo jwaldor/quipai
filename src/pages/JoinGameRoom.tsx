@@ -10,6 +10,7 @@ const JoinGameRoom: React.FC = () => {
   const [newGameName, setNewGameName] = useState("");
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [gameCreated, setGameCreated] = useState(false);
+  const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const { gamestate } = useContext(AccessContext);
 
   console.log("gamestate", gamestate);
@@ -34,6 +35,18 @@ const JoinGameRoom: React.FC = () => {
     setGameCreated(true); // Show success message
     setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
     // Logic for creating the game would go here
+  };
+
+  const handleAutoCreateGame = (e: React.FormEvent) => {
+    e.preventDefault();
+    socket.emit("autocreategame", (gamename: string) => {
+      if (gamename) {
+        setGameCreated(true); // Show success message
+      }
+      else {
+        alert("Could not create game. Perhaps unique name could not be generated.");
+      }
+    });
   };
 
 
