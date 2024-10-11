@@ -132,7 +132,9 @@ const JoinGameRoom: React.FC = () => {
               </div>
             </form>
               <p className="text-green-500 text-center mt-4 h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
-              <p className="text-green-500 text-center mt-4 h-3">{autoName && gameCreated && <span>Game created: {autoName}</span>}</p>
+              
+              <p className="text-green-500 text-center mt-4 h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
+              {autoName && gameCreated && <p className="text-gray-600 text-center mt-2">You can now join this game room & share the name with your friends!</p>}
 
           </>
         )}

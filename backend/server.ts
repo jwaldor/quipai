@@ -69,8 +69,8 @@ function generateStrangeWord(): string {
     "forge",
   ];
 
-  const usePrefix = Math.random() < 0.7;
-  const useSuffix = Math.random() < 0.5;
+  const usePrefix = Math.random() < 0.5;
+  const useSuffix = !usePrefix;
 
   let word = roots[Math.floor(Math.random() * roots.length)];
 
@@ -86,8 +86,8 @@ function generateStrangeWord(): string {
   word = word.charAt(0).toUpperCase() + word.slice(1);
 
   // Add a random number (0-999) to ensure uniqueness
-  const randomNum = parseInt(randomBytes(2).toString("hex"), 16) % 1000;
-  return `${word}${randomNum.toString().padStart(3, "0")}`;
+  const randomNum = parseInt(randomBytes(2).toString("hex"), 16) % 100;
+  return `${word}${randomNum.toString().padStart(2, "0")}`;
 }
 
 export type GameStateType = {
@@ -304,7 +304,7 @@ io.on("connection", (socket) => {
   });
   socket.on("autocreategame", (callback) => {
     console.log("creating game");
-    let gamename: string | undefined = generateStrangeWord();
+    let gamename: string | undefined = generateStrangeWord().toLowerCase();
     let tries = 0;
     while (gamestates.find((game) => game.name === gamename) && tries < 5) {
       gamename = generateStrangeWord();
@@ -314,6 +314,7 @@ io.on("connection", (socket) => {
       console.error("could not generate unique gamename");
       gamename = undefined;
     } else {
+      console.log("created game", gamename);
       gamestates.push({
         name: gamename.toLowerCase(),
         gamestate: {
@@ -334,7 +335,9 @@ io.on("connection", (socket) => {
   socket.on("addusergame", (gamename, name, callback) => {
     console.log("adding user");
     console.log("games", gamestates);
-    const thegame = gamestates.find((game) => game.name === gamename);
+    const thegame = gamestates.find(
+      (game) => game.name === gamename.toLowerCase()
+    );
     if (thegame) {
       if (!thegame.gamestate.users.find((user) => user.name === name)) {
         thegame.gamestate.users.push({
