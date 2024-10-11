@@ -4,8 +4,8 @@ import { AccessContext } from "../helpers/StateProvider";
 import { useParams } from 'react-router-dom';
 
 const JoinGameRoom: React.FC = () => {
-  const params = useParams();
-  console.log("URL params:", params);
+  const {gamename} = useParams();
+  console.log("URL params:", gamename);
 
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
