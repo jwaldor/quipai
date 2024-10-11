@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { socket } from "../routes/socket";
 import { AccessContext } from "../helpers/StateProvider";
 import { useParams } from 'react-router-dom';
@@ -6,6 +6,11 @@ import { useParams } from 'react-router-dom';
 const JoinGameRoom: React.FC = () => {
   const {gamename} = useParams();
   console.log("URL params:", gamename);
+  useEffect(() => {
+    if (gamename) {
+      setGameName(gamename);
+    }
+  }, []);
 
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
