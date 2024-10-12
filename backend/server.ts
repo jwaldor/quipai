@@ -3,6 +3,8 @@ import { Server, Socket } from "socket.io"; // Update this import
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import { createServer } from "http";
+import { randomBytes } from "crypto";
+
 // import { prompt_quip, get_winner } from "usegpt";
 
 const app: Express = express();
@@ -28,6 +30,65 @@ const MAX_ROUNDS = 4;
 const START_TIME_LIMIT = 30;
 const ASK_TIME_LIMIT = 60;
 const RESULTS_TIME_LIMIT = 40;
+
+function generateStrangeWord(): string {
+  const prefixes = [
+    "cyber",
+    "quantum",
+    "neo",
+    "hyper",
+    "astro",
+    "mega",
+    "ultra",
+    "omni",
+    "retro",
+    "crypto",
+  ];
+  const roots = [
+    "punk",
+    "flux",
+    "nova",
+    "nexus",
+    "quark",
+    "zephyr",
+    "vortex",
+    "synth",
+    "pulse",
+    "nebula",
+  ];
+  const suffixes = [
+    "oid",
+    "tron",
+    "scape",
+    "verse",
+    "matic",
+    "core",
+    "sphere",
+    "naut",
+    "mancer",
+    "forge",
+  ];
+
+  const usePrefix = Math.random() < 0.5;
+  const useSuffix = !usePrefix;
+
+  let word = roots[Math.floor(Math.random() * roots.length)];
+
+  if (usePrefix) {
+    word = prefixes[Math.floor(Math.random() * prefixes.length)] + word;
+  }
+
+  if (useSuffix) {
+    word += suffixes[Math.floor(Math.random() * suffixes.length)];
+  }
+
+  // Capitalize the first letter
+  word = word.charAt(0).toUpperCase() + word.slice(1);
+
+  // Add a random number (0-999) to ensure uniqueness
+  const randomNum = parseInt(randomBytes(2).toString("hex"), 16) % 100;
+  return `${word}${randomNum.toString().padStart(2, "0")}`;
+}
 
 export type GameStateType = {
   mode: "start" | "topic" | "ask" | "results" | "end";
@@ -241,19 +302,56 @@ io.on("connection", (socket) => {
       },
     });
   });
-  socket.on("addusergame", (gamename, name) => {
+  socket.on("autocreategame", (callback) => {
+    console.log("creating game");
+    let gamename: string | undefined = generateStrangeWord().toLowerCase();
+    let tries = 0;
+    while (gamestates.find((game) => game.name === gamename) && tries < 5) {
+      gamename = generateStrangeWord();
+      tries++;
+    }
+    if (tries >= 5) {
+      console.error("could not generate unique gamename");
+      gamename = undefined;
+    } else {
+      console.log("created game", gamename);
+      gamestates.push({
+        name: gamename.toLowerCase(),
+        gamestate: {
+          mode: "start",
+          ask_state: undefined,
+          answers: [],
+          topic_state: undefined,
+          users: [],
+          count_time: undefined,
+          remaining_rounds: 4,
+          last_winner: undefined,
+          empty_time: undefined,
+        },
+      });
+    }
+    callback(gamename);
+  });
+  socket.on("addusergame", (gamename, name, callback) => {
     console.log("adding user");
     console.log("games", gamestates);
-    const thegame = gamestates.find((game) => game.name === gamename);
+    const thegame = gamestates.find(
+      (game) => game.name === gamename.toLowerCase()
+    );
     if (thegame) {
-      thegame.gamestate.users.push({
-        name: name,
-        score: 0,
-        id: socket.id,
-        disconnection_time: undefined,
-      });
-      console.log("new gamestates", gamestates);
-      broadcastState(thegame.gamestate);
+      if (!thegame.gamestate.users.find((user) => user.name === name)) {
+        thegame.gamestate.users.push({
+          name: name,
+          score: 0,
+          id: socket.id,
+          disconnection_time: undefined,
+        });
+        console.log("new gamestates", gamestates);
+        broadcastState(thegame.gamestate);
+        callback(true);
+      } else {
+        callback(false);
+      }
     } else {
       console.error("error, game not found");
     }
