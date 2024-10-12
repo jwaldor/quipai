@@ -155,6 +155,7 @@ const JoinGameRoom: React.FC = () => {
         setGameCreated(true); // Show success message
         setAutoName(gamename);
         setGameName(gamename);
+        setNearbyGamesLocation(undefined);
       }
       else {
         alert("Could not create game. Perhaps unique name could not be generated.");
