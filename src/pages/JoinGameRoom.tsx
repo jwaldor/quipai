@@ -80,32 +80,34 @@ const JoinGameRoom: React.FC = () => {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-4 mt-3">
           Join a Game Room
         </h2>
-        <form onSubmit={handleJoinGame} className="space-y-4 mb-8">
+        <form onSubmit={handleJoinGame} className="mb-8">
+          <div className="mb-2">Room Name</div>
           <div>
             <input
               type="text"
               value={gameName}
               onChange={(e) => setGameName(e.target.value)}
-              placeholder="Game"
+              placeholder=""
               className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
             />
           </div>
+          <div className="mb-2 mt-1">Your Name</div>
           <div>
             <input
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              placeholder="Display name"
+              placeholder=""
               className="w-full px-4 py-2 rounded-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               Join Game
             </button>
@@ -157,9 +159,9 @@ const JoinGameRoom: React.FC = () => {
                 </button>
               </div>
             </form>
-              <p className="text-green-500 text-center mt-4 h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
+              <p className="text-green-500 text-center h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
               
-              <p className="text-green-500 text-center mt-4 h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
+              <p className="text-green-500 text-center h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
               {autoName && gameCreated && <p className="text-gray-600 text-center mt-2">You can now join this game room & share the name with your friends!</p>}
           {autoName && gameCreated && (
             <div  className="mt-4 text-center">
