@@ -41,8 +41,7 @@ const JoinGameRoom: React.FC = () => {
 
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
-  const [newGameName, setNewGameName] = useState("");
-  const [showCreateGame, setShowCreateGame] = useState(false);
+  // const [newGameName, setNewGameName] = useState("");
   const [gameCreated, setGameCreated] = useState(false);
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const [createlocation, setCreateLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
@@ -143,15 +142,15 @@ const JoinGameRoom: React.FC = () => {
     // Logic for joining the game would go here
   };
 
-  const handleCreateGame = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Creating game with", { newGameName });
-    socket.emit("creategame", newGameName);
-    setNewGameName(""); // Clear the input field
-    setGameCreated(true); // Show success message
-    setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
-    // Logic for creating the game would go here
-  };
+  // const handleCreateGame = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   console.log("Creating game with", { newGameName });
+  //   socket.emit("creategame", newGameName);
+  //   setNewGameName(""); // Clear the input field
+  //   setGameCreated(true); // Show success message
+  //   setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
+  //   // Logic for creating the game would go here
+  // };
 
   const handleAutoCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
