@@ -71,10 +71,13 @@ const JoinGameRoom: React.FC = () => {
   // const { gamestate } = useContext(AccessContext);
 
   function getUserLocation(): Promise<{latitude: number, longitude: number}> {
+    console.log("Getting location function");
     return new Promise((resolve, reject) => {
       if ("geolocation" in navigator) {
+        console.log("Geolocation is supported");
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            console.log("Position:", position);
             resolve({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
@@ -94,6 +97,7 @@ const JoinGameRoom: React.FC = () => {
   
   function handleCheckLocation() {
     if (!createlocation) {
+      console.log("Getting location");
       getUserLocation().then((location) => {
         setCreateLocation(location);
         console.log("Location:", location);
@@ -217,13 +221,30 @@ const JoinGameRoom: React.FC = () => {
               <div>
                 
               </div>
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center">
                 <button
                   type="submit"
-                  className="w-[75%] bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="w-[75%] bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mb-2"
                 >
                   Create Game
                 </button>
+                <div className="flex items-center"  title="Include location in game so that nearby players can find it">
+                  <input
+                    type="checkbox"
+                    id="includeLocation"
+                    className="form-checkbox h-5 w-5 text-green-600 mr-2"
+                    onClick={handleCheckLocation}
+                    checked={!!createlocation}
+                    // title="Include location in game so that nearby players can find it"
+                  />
+                  <label 
+                    htmlFor="includeLocation" 
+                    className="text-sm text-gray-700 cursor-pointer"
+                    // title="Include location in game so that nearby players can find it"
+                  >
+                    Include location
+                  </label>
+                </div>
               </div>
             </form>
             
