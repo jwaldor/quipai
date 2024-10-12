@@ -32,7 +32,7 @@ const JoinGameRoom: React.FC = () => {
     console.log("qrRef",qrRef.current);
     if (qrRef.current) {
      console.log("qrRef not null",qrRef.current);
-   QRCode.toCanvas(qrRef.current, `https://quipai.onrender.com/${gamename}`, (error) => {
+   QRCode.toCanvas(qrRef.current, `https://quipai.onrender.com/${autoName}`, (error) => {
      if (error) console.error('Error generating QR code', error);
    });
  }},[autoName])
