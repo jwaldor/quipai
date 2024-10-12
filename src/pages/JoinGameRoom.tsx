@@ -112,15 +112,15 @@ const JoinGameRoom: React.FC = () => {
           </div>
         </form>
         <hr className="my-8 border-gray-300" />
-        <div className="text-center">
+        {/* <div className="text-center">
           <button
             onClick={() => setShowCreateGame(!showCreateGame)}
             className="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
           >
             {showCreateGame ? "Hide Create Game Room" : "Create Game Room"}
           </button>
-        </div>
-        {showCreateGame && (
+        </div> */}
+        {(
           <>
             <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
               Create a Game Room
