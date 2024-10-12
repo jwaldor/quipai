@@ -46,7 +46,7 @@ const JoinGameRoom: React.FC = () => {
   const [gameCreated, setGameCreated] = useState(false);
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const [createlocation, setCreateLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
-  const [createLocationChecked, setCreateLocationChecked] = useState(false);
+  const [nearbygameslocation, setNearbyGamesLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
   const { gamestate } = useContext(AccessContext);
 
   useEffect(() => {
@@ -95,7 +95,7 @@ const JoinGameRoom: React.FC = () => {
     });
   }
   
-  function handleCheckLocation() {
+  function handleCheckCreateLocation() {
     if (!createlocation) {
       console.log("Getting location");
       getUserLocation().then((location) => {
@@ -107,6 +107,22 @@ const JoinGameRoom: React.FC = () => {
     }
     else {
       setCreateLocation(undefined);
+    }
+  }
+
+    
+  function handleCheckNearbyGamesLocation() {
+    if (!nearbygameslocation) {
+      console.log("Getting location");
+      getUserLocation().then((location) => {
+        setNearbyGamesLocation(location);
+        console.log("Location:", location);
+      }).catch((error) => {
+        console.error("Error getting location:", error);
+      });
+    }
+    else {
+      setNearbyGamesLocation(undefined);
     }
   }
   
@@ -156,6 +172,7 @@ const JoinGameRoom: React.FC = () => {
         </h2>
         <form onSubmit={handleJoinGame} className="mb-8">
           <div className="mb-2">Room Name</div>
+          
           <div>
             <input
               type="text"
@@ -233,7 +250,7 @@ const JoinGameRoom: React.FC = () => {
                     type="checkbox"
                     id="includeLocation"
                     className="form-checkbox h-5 w-5 text-green-600 mr-2"
-                    onClick={handleCheckLocation}
+                    onClick={handleCheckCreateLocation}
                     checked={!!createlocation}
                     // title="Include location in game so that nearby players can find it"
                   />
