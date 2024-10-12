@@ -47,6 +47,7 @@ const JoinGameRoom: React.FC = () => {
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const [createlocation, setCreateLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
   const [nearbygameslocation, setNearbyGamesLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
+  const [nearbyGames, setNearbyGames] = useState<string[] | undefined>(undefined);
   const { gamestate } = useContext(AccessContext);
 
   useEffect(() => {
@@ -116,6 +117,10 @@ const JoinGameRoom: React.FC = () => {
       console.log("Getting location");
       getUserLocation().then((location) => {
         setNearbyGamesLocation(location);
+        socket.emit("getnearbygames", location, (games: string[]) => {
+          console.log("Nearby games:", games);
+          setNearbyGames(games);
+        });
         console.log("Location:", location);
       }).catch((error) => {
         console.error("Error getting location:", error);
