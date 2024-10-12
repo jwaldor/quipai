@@ -134,7 +134,7 @@ const JoinGameRoom: React.FC = () => {
 
   const handleAutoCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
-    socket.emit("autocreategame", (gamename: string) => {
+    socket.emit("autocreategame", createlocation, (gamename: string) => {
       if (gamename) {
         setGameCreated(true); // Show success message
         setAutoName(gamename);
