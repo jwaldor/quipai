@@ -20,7 +20,7 @@ function ShareButton({ title, text, url }: { title: string, text: string, url: s
   };
 
   return (
-    <button onClick={handleShare}>Share Join Link</button>
+    <button className="text-lg font-semibold mb-2 text-black underline" onClick={handleShare}>Share Join Link</button>
   );
 }
 
@@ -182,12 +182,15 @@ const JoinGameRoom: React.FC = () => {
               <p className="text-green-500 text-center h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
               
               <p className="text-green-500 text-center h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
-              {autoName && gameCreated && <p className="text-gray-600 text-center mt-2">You can now join this game room & share the name with your friends!</p>}
+              {autoName && gameCreated && <p className="text-gray-600 text-center mt-2">You can now join this game room & share the name with your friends!
+
+                <div className="mt-2"><ShareButton title="Join game room" text="Click link to join game room" url={`https://quipai.onrender.com/${autoName}`} /></div>
+
+                </p>}
           {autoName && gameCreated && (
             <div  className="mt-4 text-center">
-              <h3 className="text-lg font-semibold mb-2">Share this QR code to invite friends:</h3>
+              <h3 className="text-lg font-semibold mb-2">Or share this QR code to invite friends:</h3>
               <canvas ref={qrRef} className="mx-auto"></canvas>
-              <ShareButton title="Join game room" text="Click link to join game room" url={`https://quipai.onrender.com/${autoName}`} />
             </div>
           )}
           </>
