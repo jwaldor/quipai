@@ -171,7 +171,16 @@ const JoinGameRoom: React.FC = () => {
           Join a Game Room
         </h2>
         <form onSubmit={handleJoinGame} className="mb-8">
-          <div className="mb-2">Room Name</div>
+          <div className="mb-2 flex items-center justify-between">
+            <span>Room Name</span>
+            <div className="flex items-center">
+              <input type="checkbox" id="seeNearbyGames" className="mr-2"
+              onClick={handleCheckNearbyGamesLocation}
+              checked={!!nearbygameslocation}
+              />
+              <label htmlFor="seeNearbyGames" className="text-sm">See nearby games</label>
+            </div>
+          </div>
           
           <div>
             <input
