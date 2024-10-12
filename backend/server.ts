@@ -147,6 +147,26 @@ function isUserConnected(socketId: string) {
   return socket ? socket.connected : false;
 }
 
+function getNearbyGames(location: { latitude: number; longitude: number }) {
+  return gamestates
+    .filter(
+      (game) =>
+        game.location &&
+        6371000 *
+          Math.acos(
+            Math.cos((location.latitude * Math.PI) / 180) *
+              Math.cos((game.location.latitude * Math.PI) / 180) *
+              Math.cos(
+                ((game.location.longitude - location.longitude) * Math.PI) / 180
+              ) +
+              Math.sin((location.latitude * Math.PI) / 180) *
+                Math.sin((game.location.latitude * Math.PI) / 180)
+          ) <=
+          1609.34 // 1 mile in meters
+    )
+    .map((game) => game.name);
+}
+
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
   gamestates.forEach((state) => {
@@ -306,6 +326,9 @@ io.on("connection", (socket) => {
   //     },
   //   });
   // });
+  socket.on("getnearbygames", (location, callback) => {
+    callback(getNearbyGames(location));
+  });
   socket.on("autocreategame", (location, callback) => {
     console.log("creating game");
     let gamename: string | undefined = generateStrangeWord().toLowerCase();
