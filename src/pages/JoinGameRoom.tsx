@@ -177,7 +177,7 @@ const JoinGameRoom: React.FC = () => {
         </h2>
         <form onSubmit={handleJoinGame} className="">
           <div className="mb-2 flex items-center justify-between">
-            <span>Room Name</span>
+            <span className="text-slate-600">Room Name</span>
             <div className="flex items-center">
               <input type="checkbox" id="seeNearbyGames" className="mr-2"
               onClick={handleCheckNearbyGamesLocation}
@@ -192,7 +192,7 @@ const JoinGameRoom: React.FC = () => {
               <select
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
-                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900"
+                className="w-full px-4 py-2 rounded-full border-2 border-green-700 focus:outline-none bg-cyan-200 focus:bg-teal-400"
               >
                 <option value="">Select a nearby game</option>
                 {nearbyGames ? nearbyGames.map((game, index) => (
@@ -207,18 +207,18 @@ const JoinGameRoom: React.FC = () => {
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
                 placeholder=""
-                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900 bg-cyan-200 focus:bg-teal-400"
+                className="w-full px-4 py-2 rounded-full border-2 border-green-700 focus:outline-none focus:border-green-900 bg-cyan-400 focus:bg-teal-400"
               />
             )}
           </div>
-          <div className="mb-2 mt-1">Your Name</div>
+          <div className="mb-2 mt-1 text-slate-600">Your Name</div>
           <div>
             <input
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder=""
-              className="w-full px-4 py-2 rounded-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 rounded-full border-2 border-green-700 focus:outline-none focus:border-green-900 bg-cyan-400 focus:bg-teal-400"
             />
           </div>
           <div className="flex justify-center">
