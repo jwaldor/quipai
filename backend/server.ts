@@ -147,6 +147,26 @@ function isUserConnected(socketId: string) {
   return socket ? socket.connected : false;
 }
 
+function getNearbyGames(location: { latitude: number; longitude: number }) {
+  return gamestates
+    .filter(
+      (game) =>
+        game.location &&
+        6371000 *
+          Math.acos(
+            Math.cos((location.latitude * Math.PI) / 180) *
+              Math.cos((game.location.latitude * Math.PI) / 180) *
+              Math.cos(
+                ((game.location.longitude - location.longitude) * Math.PI) / 180
+              ) +
+              Math.sin((location.latitude * Math.PI) / 180) *
+                Math.sin((game.location.latitude * Math.PI) / 180)
+          ) <=
+          1609.34 // 1 mile in meters
+    )
+    .map((game) => game.name);
+}
+
 function broadcastStates() {
   // io.to(socketId).emit(/* ... */);
   gamestates.forEach((state) => {
@@ -215,7 +235,11 @@ function clearPalette(state: GameStateType) {
   }
 }
 
-export const gamestates: Array<{ name: string; gamestate: GameStateType }> = [];
+export const gamestates: Array<{
+  name: string;
+  gamestate: GameStateType;
+  location: { latitude: number; longitude: number } | undefined;
+}> = [];
 console.log("gamestates", gamestates);
 
 // declare module 'socket.io' {
@@ -285,24 +309,27 @@ io.on("connection", (socket) => {
     console.log("gamestatemiddle", gamestates, socket.gamestate);
     next();
   });
-  socket.on("creategame", (gamename) => {
-    console.log("creating game");
-    gamestates.push({
-      name: gamename.toLowerCase(),
-      gamestate: {
-        mode: "start",
-        ask_state: undefined,
-        answers: [],
-        topic_state: undefined,
-        users: [],
-        count_time: undefined,
-        remaining_rounds: 4,
-        last_winner: undefined,
-        empty_time: undefined,
-      },
-    });
+  // socket.on("creategame", (gamename) => {
+  //   console.log("creating game");
+  //   gamestates.push({
+  //     name: gamename.toLowerCase(),
+  //     gamestate: {
+  //       mode: "start",
+  //       ask_state: undefined,
+  //       answers: [],
+  //       topic_state: undefined,
+  //       users: [],
+  //       count_time: undefined,
+  //       remaining_rounds: 4,
+  //       last_winner: undefined,
+  //       empty_time: undefined,
+  //     },
+  //   });
+  // });
+  socket.on("getnearbygames", (location, callback) => {
+    callback(getNearbyGames(location));
   });
-  socket.on("autocreategame", (callback) => {
+  socket.on("autocreategame", (location, callback) => {
     console.log("creating game");
     let gamename: string | undefined = generateStrangeWord().toLowerCase();
     let tries = 0;
@@ -317,6 +344,7 @@ io.on("connection", (socket) => {
       console.log("created game", gamename);
       gamestates.push({
         name: gamename.toLowerCase(),
+        location: location,
         gamestate: {
           mode: "start",
           ask_state: undefined,

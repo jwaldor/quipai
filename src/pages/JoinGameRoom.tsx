@@ -41,12 +41,12 @@ const JoinGameRoom: React.FC = () => {
 
   const [gameName, setGameName] = useState("");
   const [userName, setUserName] = useState("");
-  const [newGameName, setNewGameName] = useState("");
-  const [showCreateGame, setShowCreateGame] = useState(false);
+  // const [newGameName, setNewGameName] = useState("");
   const [gameCreated, setGameCreated] = useState(false);
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
   const [createlocation, setCreateLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
-  const [createLocationChecked, setCreateLocationChecked] = useState(false);
+  const [nearbygameslocation, setNearbyGamesLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
+  const [nearbyGames, setNearbyGames] = useState<string[] | undefined>(undefined);
   const { gamestate } = useContext(AccessContext);
 
   useEffect(() => {
@@ -71,10 +71,13 @@ const JoinGameRoom: React.FC = () => {
   // const { gamestate } = useContext(AccessContext);
 
   function getUserLocation(): Promise<{latitude: number, longitude: number}> {
+    console.log("Getting location function");
     return new Promise((resolve, reject) => {
       if ("geolocation" in navigator) {
+        console.log("Geolocation is supported");
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            console.log("Position:", position);
             resolve({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
@@ -92,8 +95,9 @@ const JoinGameRoom: React.FC = () => {
     });
   }
   
-  function handleCheckLocation() {
+  function handleCheckCreateLocation() {
     if (!createlocation) {
+      console.log("Getting location");
       getUserLocation().then((location) => {
         setCreateLocation(location);
         console.log("Location:", location);
@@ -103,6 +107,26 @@ const JoinGameRoom: React.FC = () => {
     }
     else {
       setCreateLocation(undefined);
+    }
+  }
+
+    
+  function handleCheckNearbyGamesLocation() {
+    if (!nearbygameslocation) {
+      console.log("Getting location");
+      getUserLocation().then((location) => {
+        setNearbyGamesLocation(location);
+        socket.emit("getnearbygames", location, (games: string[]) => {
+          console.log("Nearby games:", games);
+          setNearbyGames(games);
+        });
+        console.log("Location:", location);
+      }).catch((error) => {
+        console.error("Error getting location:", error);
+      });
+    }
+    else {
+      setNearbyGamesLocation(undefined);
     }
   }
   
@@ -118,23 +142,24 @@ const JoinGameRoom: React.FC = () => {
     // Logic for joining the game would go here
   };
 
-  const handleCreateGame = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Creating game with", { newGameName });
-    socket.emit("creategame", newGameName);
-    setNewGameName(""); // Clear the input field
-    setGameCreated(true); // Show success message
-    setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
-    // Logic for creating the game would go here
-  };
+  // const handleCreateGame = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   console.log("Creating game with", { newGameName });
+  //   socket.emit("creategame", newGameName);
+  //   setNewGameName(""); // Clear the input field
+  //   setGameCreated(true); // Show success message
+  //   setTimeout(() => setGameCreated(false), 3000); // Hide success message after 3 seconds
+  //   // Logic for creating the game would go here
+  // };
 
   const handleAutoCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
-    socket.emit("autocreategame", (gamename: string) => {
+    socket.emit("autocreategame", createlocation, (gamename: string) => {
       if (gamename) {
         setGameCreated(true); // Show success message
         setAutoName(gamename);
         setGameName(gamename);
+        setNearbyGamesLocation(undefined);
       }
       else {
         alert("Could not create game. Perhaps unique name could not be generated.");
@@ -151,15 +176,40 @@ const JoinGameRoom: React.FC = () => {
           Join a Game Room
         </h2>
         <form onSubmit={handleJoinGame} className="mb-8">
-          <div className="mb-2">Room Name</div>
+          <div className="mb-2 flex items-center justify-between">
+            <span>Room Name</span>
+            <div className="flex items-center">
+              <input type="checkbox" id="seeNearbyGames" className="mr-2"
+              onClick={handleCheckNearbyGamesLocation}
+              checked={!!nearbygameslocation}
+              />
+              <label htmlFor="seeNearbyGames" className="text-sm">See nearby games</label>
+            </div>
+          </div>
+          
           <div>
-            <input
-              type="text"
-              value={gameName}
-              onChange={(e) => setGameName(e.target.value)}
-              placeholder=""
-              className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
-            />
+            {nearbygameslocation ? (
+              <select
+                value={gameName}
+                onChange={(e) => setGameName(e.target.value)}
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+              >
+                <option value="">Select a nearby game</option>
+                {nearbyGames ? nearbyGames.map((game, index) => (
+                  <option key={index} value={game}>
+                    {game}
+                  </option>
+                )) : <option value="">Error getting nearby games</option>}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={gameName}
+                onChange={(e) => setGameName(e.target.value)}
+                placeholder=""
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+              />
+            )}
           </div>
           <div className="mb-2 mt-1">Your Name</div>
           <div>
@@ -217,13 +267,30 @@ const JoinGameRoom: React.FC = () => {
               <div>
                 
               </div>
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center">
                 <button
                   type="submit"
-                  className="w-[75%] bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="w-[75%] bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mb-2"
                 >
                   Create Game
                 </button>
+                <div className="flex items-center"  title="Include location in game so that nearby players can find it">
+                  <input
+                    type="checkbox"
+                    id="includeLocation"
+                    className="form-checkbox h-5 w-5 text-green-600 mr-2"
+                    onClick={handleCheckCreateLocation}
+                    checked={!!createlocation}
+                    // title="Include location in game so that nearby players can find it"
+                  />
+                  <label 
+                    htmlFor="includeLocation" 
+                    className="text-sm text-gray-700 cursor-pointer"
+                    // title="Include location in game so that nearby players can find it"
+                  >
+                    Include location to connect with nearby players
+                  </label>
+                </div>
               </div>
             </form>
             
