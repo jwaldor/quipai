@@ -5,6 +5,26 @@ import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode'
 
 
+function ShareButton({ title, text, url }: { title: string, text: string, url: string }) {
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      console.log('Web Share API not supported');
+    }
+  };
+
+  return (
+    <button onClick={handleShare}>Share Join Link</button>
+  );
+}
+
+
 const JoinGameRoom: React.FC = () => {
   const {gamename} = useParams();
   const qrRef = useRef<HTMLCanvasElement>(null);
@@ -167,6 +187,7 @@ const JoinGameRoom: React.FC = () => {
             <div  className="mt-4 text-center">
               <h3 className="text-lg font-semibold mb-2">Share this QR code to invite friends:</h3>
               <canvas ref={qrRef} className="mx-auto"></canvas>
+              <ShareButton title="Join game room" text="Click link to join game room" url={`https://quipai.onrender.com/${autoName}`} />
             </div>
           )}
           </>
