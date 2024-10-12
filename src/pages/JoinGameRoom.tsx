@@ -207,7 +207,7 @@ const JoinGameRoom: React.FC = () => {
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
                 placeholder=""
-                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900"
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900 bg-cyan-200 focus:bg-teal-400"
               />
             )}
           </div>
