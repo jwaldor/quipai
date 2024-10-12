@@ -242,7 +242,7 @@ const JoinGameRoom: React.FC = () => {
                     className="text-sm text-gray-700 cursor-pointer"
                     // title="Include location in game so that nearby players can find it"
                   >
-                    Include location
+                    Include location to connect with nearby players
                   </label>
                 </div>
               </div>

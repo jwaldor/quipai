@@ -215,7 +215,11 @@ function clearPalette(state: GameStateType) {
   }
 }
 
-export const gamestates: Array<{ name: string; gamestate: GameStateType }> = [];
+export const gamestates: Array<{
+  name: string;
+  gamestate: GameStateType;
+  location: { latitude: number; longitude: number } | undefined;
+}> = [];
 console.log("gamestates", gamestates);
 
 // declare module 'socket.io' {
@@ -285,24 +289,24 @@ io.on("connection", (socket) => {
     console.log("gamestatemiddle", gamestates, socket.gamestate);
     next();
   });
-  socket.on("creategame", (gamename) => {
-    console.log("creating game");
-    gamestates.push({
-      name: gamename.toLowerCase(),
-      gamestate: {
-        mode: "start",
-        ask_state: undefined,
-        answers: [],
-        topic_state: undefined,
-        users: [],
-        count_time: undefined,
-        remaining_rounds: 4,
-        last_winner: undefined,
-        empty_time: undefined,
-      },
-    });
-  });
-  socket.on("autocreategame", (callback) => {
+  // socket.on("creategame", (gamename) => {
+  //   console.log("creating game");
+  //   gamestates.push({
+  //     name: gamename.toLowerCase(),
+  //     gamestate: {
+  //       mode: "start",
+  //       ask_state: undefined,
+  //       answers: [],
+  //       topic_state: undefined,
+  //       users: [],
+  //       count_time: undefined,
+  //       remaining_rounds: 4,
+  //       last_winner: undefined,
+  //       empty_time: undefined,
+  //     },
+  //   });
+  // });
+  socket.on("autocreategame", (location, callback) => {
     console.log("creating game");
     let gamename: string | undefined = generateStrangeWord().toLowerCase();
     let tries = 0;
@@ -317,6 +321,7 @@ io.on("connection", (socket) => {
       console.log("created game", gamename);
       gamestates.push({
         name: gamename.toLowerCase(),
+        location: location,
         gamestate: {
           mode: "start",
           ask_state: undefined,
