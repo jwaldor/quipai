@@ -196,11 +196,11 @@ const JoinGameRoom: React.FC = () => {
                 className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
               >
                 <option value="">Select a nearby game</option>
-                {nearbyGames.map((game, index) => (
+                {nearbyGames ? nearbyGames.map((game, index) => (
                   <option key={index} value={game}>
                     {game}
                   </option>
-                ))}
+                )) : <option value="">Error getting nearby games</option>}
               </select>
             ) : (
               <input
