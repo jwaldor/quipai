@@ -189,13 +189,28 @@ const JoinGameRoom: React.FC = () => {
           </div>
           
           <div>
-            <input
-              type="text"
-              value={gameName}
-              onChange={(e) => setGameName(e.target.value)}
-              placeholder=""
-              className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
-            />
+            {nearbygameslocation ? (
+              <select
+                value={gameName}
+                onChange={(e) => setGameName(e.target.value)}
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+              >
+                <option value="">Select a nearby game</option>
+                {nearbyGames.map((game, index) => (
+                  <option key={index} value={game}>
+                    {game}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={gameName}
+                onChange={(e) => setGameName(e.target.value)}
+                placeholder=""
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+              />
+            )}
           </div>
           <div className="mb-2 mt-1">Your Name</div>
           <div>
