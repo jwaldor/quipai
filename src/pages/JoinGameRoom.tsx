@@ -217,15 +217,16 @@ const JoinGameRoom: React.FC = () => {
               <div>
                 
               </div>
-              <div>
+              <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="w-full bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="w-[75%] bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
                   Create Game
                 </button>
               </div>
             </form>
+            
               <p className="text-green-500 text-center h-3">{!autoName && gameCreated && <span>Game created!</span>}</p>
               
               <p className="text-green-500 text-center h-3">{autoName && gameCreated && <span>Game created: {autoName} </span>}</p>
