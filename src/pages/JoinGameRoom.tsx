@@ -4,27 +4,6 @@ import { AccessContext } from "../helpers/StateProvider";
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode'
 
-function getUserLocation() {
-  return new Promise((resolve, reject) => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          });
-        },
-        (error) => {
-          alert("Failed to get location: " + error.message);
-          reject(error);
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser");
-      reject(new Error("Geolocation not supported"));
-    }
-  });
-}
 
 function ShareButton({ title, text, url }: { title: string, text: string, url: string }) {
   const handleShare = async () => {
@@ -66,6 +45,8 @@ const JoinGameRoom: React.FC = () => {
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [gameCreated, setGameCreated] = useState(false);
   const [autoName,setAutoName] = useState<string | undefined>(undefined);
+  const [createlocation, setCreateLocation] = useState<{latitude: number, longitude: number} | undefined>(undefined);
+  const [createLocationChecked, setCreateLocationChecked] = useState(false);
   const { gamestate } = useContext(AccessContext);
 
   useEffect(() => {
@@ -88,6 +69,43 @@ const JoinGameRoom: React.FC = () => {
 
   console.log("gamestate", gamestate);
   // const { gamestate } = useContext(AccessContext);
+
+  function getUserLocation(): Promise<{latitude: number, longitude: number}> {
+    return new Promise((resolve, reject) => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          },
+          (error) => {
+            alert("Failed to get location: " + error.message);
+            reject(error);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser");
+        reject(new Error("Geolocation not supported"));
+      }
+    });
+  }
+  
+  function handleCheckLocation() {
+    if (!createlocation) {
+      getUserLocation().then((location) => {
+        setCreateLocation(location);
+        console.log("Location:", location);
+      }).catch((error) => {
+        console.error("Error getting location:", error);
+      });
+    }
+    else {
+      setCreateLocation(undefined);
+    }
+  }
+  
 
   const handleJoinGame = (e: React.FormEvent) => {
     e.preventDefault();
