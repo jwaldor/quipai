@@ -175,7 +175,7 @@ const JoinGameRoom: React.FC = () => {
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-4 mt-3">
           Join a Game Room
         </h2>
-        <form onSubmit={handleJoinGame} className="mb-8">
+        <form onSubmit={handleJoinGame} className="">
           <div className="mb-2 flex items-center justify-between">
             <span>Room Name</span>
             <div className="flex items-center">
@@ -192,7 +192,7 @@ const JoinGameRoom: React.FC = () => {
               <select
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
-                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900"
               >
                 <option value="">Select a nearby game</option>
                 {nearbyGames ? nearbyGames.map((game, index) => (
@@ -207,7 +207,7 @@ const JoinGameRoom: React.FC = () => {
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
                 placeholder=""
-                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-full border-2 border-yellow-700 focus:outline-none focus:border-yellow-900"
               />
             )}
           </div>
@@ -221,16 +221,16 @@ const JoinGameRoom: React.FC = () => {
               className="w-full px-4 py-2 rounded-full border-2 border-blue-300 focus:outline-none focus:border-blue-500"
             />
           </div>
-          <div>
+          <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="w-[75%] my-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               Join Game
             </button>
           </div>
         </form>
-        <hr className="my-8 border-gray-300" />
+        <hr className="mb-4 border-gray-300" />
         {/* <div className="text-center">
           <button
             onClick={() => setShowCreateGame(!showCreateGame)}
@@ -241,7 +241,7 @@ const JoinGameRoom: React.FC = () => {
         </div> */}
         {(
           <>
-            <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
+            <h2 className="text-xl font-bold text-center text-gray-800">
               Create a Game Room
             </h2>
             {/* <form onSubmit={handleCreateGame} className="space-y-4">
