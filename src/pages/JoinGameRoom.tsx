@@ -4,6 +4,27 @@ import { AccessContext } from "../helpers/StateProvider";
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode'
 
+function getUserLocation() {
+  return new Promise((resolve, reject) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+        },
+        (error) => {
+          alert("Failed to get location: " + error.message);
+          reject(error);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser");
+      reject(new Error("Geolocation not supported"));
+    }
+  });
+}
 
 function ShareButton({ title, text, url }: { title: string, text: string, url: string }) {
   const handleShare = async () => {
